@@ -26,10 +26,11 @@ function loadExternalLibs() {
 }
 //loadExternalLibs()
 
-async function fetchMyDocument(remoteLink) {
+async function fetchData(remoteUrl) {
     try {
-        let response = await GM_fetch(remoteLink, {
+        let response = await fetch(remoteUrl, {
             method: 'GET',
+            mode: 'cors',
         });
         return (await response.text());
     } catch (error) {
@@ -37,11 +38,11 @@ async function fetchMyDocument(remoteLink) {
     }
 }
 
-async function convertHtmlStringToDocumentObject(remoteLink){
-    let plainPageTextValue = await fetchMyDocument(remoteLink);
+async function convertHtmlStringToDocumentObject(remoteUrl){
+    let plainPageTextValue = await fetchData(remoteUrl);
     let parser = new DOMParser();
     let remotePageDom = parser.parseFromString(plainPageTextValue, 'text/html');
-    return remotePageDom
+    return (remotePageDom);
 }
 
 // A stripped down & succinct version of the original scraped website play funciton
@@ -52,13 +53,13 @@ function Play(a, b, c, d, e, f, g) {
     return (b)
 }
 
-async function createRecordingsObject(remoteLink){
+async function createRecordingsObject(remoteUrl){
     let recordingsObject = {}
     let allPlayButtonWithinTheDom;
     let remotePageDom;
     let alternateUrl;
 
-    remotePageDom = await convertHtmlStringToDocumentObject(remoteLink);
+    remotePageDom = await convertHtmlStringToDocumentObject(remoteUrl);
     allPlayButtonWithinTheDom = remotePageDom.getElementsByClassName('play')
 
     //  - If the initial requested page didn't entail any recordings, then fall back to the recording of the first language in the horizontal nav item bar.
@@ -95,7 +96,7 @@ function createPopoverContainer(){
 	document.body.appendChild(popover);
 }
 
-async function appendingRecordings(remoteLink, event){
+async function appendingRecordings(remoteUrl, event){
 	let recordingsObject;
 	let popover = document.getElementsByClassName('parent-popover')[0]
 	let recordingsDiv = document.createElement('div')
@@ -204,7 +205,7 @@ async function appendingRecordings(remoteLink, event){
 		}
 	`
 
-	recordingsObject = await createRecordingsObject(remoteLink);
+	recordingsObject = await createRecordingsObject(remoteUrl);
 	for (let i=0; i < Object.keys(recordingsObject).length; i++) {
 		let buttonRespectiveText = document.createElement('p')
 		let buttonElement = document.createElement('button')
@@ -334,9 +335,9 @@ document.addEventListener('mouseup', () => {
 			createPopoverContainer();
 			// Identifying the word language
 			let language_code = detectHighlightedWordLanguage(highlightedValue)
-			let remoteLink = `https://forvo.com/search/${highlightedValue}/${language_code}`
+			let remoteUrl = `https://forvo.com/search/${highlightedValue}/${language_code}`
 			// Append the pronunciation recordings to the popover
-			document.body.appendChild(await appendingRecordings(remoteLink, event))
+			document.body.appendChild(await appendingRecordings(remoteUrl, event))
 		}
 	}, 200)
 })
@@ -416,6 +417,4 @@ function handleToolipRemoval(event) {
 
 /* Changelog
 *  - If the requested word, didn't find any available recordings, then it falls back to the first langauge in the horizontal navbar.
-*
-*
 */
