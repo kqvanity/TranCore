@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name         Fovo
+// @name         ovo
 // @namespace    http://tampermonkey.net/
 // @version      0.6
 // @description  Pronounce words on the go
@@ -26,20 +26,21 @@ function loadExternalLibs() {
 }
 //loadExternalLibs()
 
-async function fetchData(remoteUrl) {
-    try {
-        let response = await fetch(remoteUrl, {
-            method: 'GET',
-            mode: 'cors',
-        });
-        return (await response.text());
-    } catch (error) {
-        console.log('An error occurred', error)
-    }
+async function fetchData(remoteUrl, dataType) {
+    return new Promise((resolve, reject) => {
+        try {
+            chrome.runtime.sendMessage({ msg: dataType, remoteSiteUrl: remoteUrl }, async (response) => {
+                //console.log(response)
+                //return (await (response));
+                resolve (response);
+            })
+        } catch (exception) {
+        }
+    })
 }
 
 async function convertHtmlStringToDocumentObject(remoteUrl){
-    let plainPageTextValue = await fetchData(remoteUrl);
+    let plainPageTextValue = await fetchData(remoteUrl, 'document');
     let parser = new DOMParser();
     let remotePageDom = parser.parseFromString(plainPageTextValue, 'text/html');
     return (remotePageDom);
@@ -48,7 +49,7 @@ async function convertHtmlStringToDocumentObject(remoteUrl){
 // A stripped down & succinct version of the original scraped website play funciton
 function Play(a, b, c, d, e, f, g) {
     let defaultProtocol = 'https:';
-    let _AUDIO_HTTP_HOST='audio12.forvo.com';
+    let _AUDIO_HTTP_HOST = 'audio12.forvo.com';
     b = defaultProtocol + "//" + _AUDIO_HTTP_HOST + "/mp3/" + atob(b);
     return (b)
 }
@@ -280,14 +281,13 @@ function detectHighlightedWordLanguage(word) {
 async function playAudio(audioUrl) {
     let audioContext = new AudioContext();
     let audio;
-    await GM_fetch(audioUrl, {
-        method: 'GET',
-    })
-    .then(data => data.arrayBuffer())
-    .then(arrayBuffer => audioContext.decodeAudioData(arrayBuffer))
-    .then(decodedAudio => {
-        audio = decodedAudio;
-    });
+    console.log(audioUrl)
+    await fetchData(audioUrl, 'audio')
+        .then(data => new Uint8Array(JSON.parse(data)).buffer)
+        .then(arrayBuffer => audioContext.decodeAudioData(arrayBuffer))
+        .then(decodedAudio => {
+            audio = decodedAudio;
+        });
     (async function playback() {
         const playSound = audioContext.createBufferSource();
         playSound.buffer = audio;

@@ -4,9 +4,12 @@
     "description": "Auto-popup tooltip displaying translation & pronunciation of currently selected word(s)",
     "manifest_version": 3,
     "author": "Polendina",
+    "content_security_policy": {
+        "script-src": "self"
+    },
     "content_scripts": [{
         "js": [
-            "injection.js"
+            "forvo-popover.js"
         ],
         "run_at": "document_idle",
         "all_frames": true,
@@ -15,11 +18,14 @@
         ]
     }],
     "permissions": [
-        "activeTab"
+        "tabs",
+        "activeTab",
+        "scripting"
     ],
     "host_permissions": [
     	"http://forvo.com/",
-    	"https://forvo.com/"
+    	"https://forvo.com/",
+    	"https://*.forvo.com/"
     ],
     "background": {
         "service_worker": "background.js"
