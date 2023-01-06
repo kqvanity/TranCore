@@ -17,12 +17,12 @@ function loadExternalLibs() {
     GM_fetch(shareThisLib, {
         method: 'GET'
     })
-    .then((response) => {
-        let newScriptElement = document.createElement('script')
-        newScriptElement.innerText = response.responseText;
-        newScriptElement.classList += 'Floating-ui'
-        document.head.appendChild(newScriptElement)
-    })
+        .then((response) => {
+            let newScriptElement = document.createElement('script')
+            newScriptElement.innerText = response.responseText;
+            newScriptElement.classList += 'Floating-ui'
+            document.head.appendChild(newScriptElement)
+        })
 }
 //loadExternalLibs()
 
@@ -30,16 +30,14 @@ async function fetchData(remoteUrl, dataType) {
     return new Promise((resolve, reject) => {
         try {
             chrome.runtime.sendMessage({ msg: dataType, remoteSiteUrl: remoteUrl }, async (response) => {
-                //console.log(response)
-                //return (await (response));
-                resolve (response);
+                resolve(response);
             })
         } catch (exception) {
         }
     })
 }
 
-async function convertHtmlStringToDocumentObject(remoteUrl){
+async function convertHtmlStringToDocumentObject(remoteUrl) {
     let plainPageTextValue = await fetchData(remoteUrl, 'document');
     let parser = new DOMParser();
     let remotePageDom = parser.parseFromString(plainPageTextValue, 'text/html');
@@ -54,7 +52,7 @@ function Play(a, b, c, d, e, f, g) {
     return (b)
 }
 
-async function createRecordingsObject(remoteUrl){
+async function createRecordingsObject(remoteUrl) {
     let recordingsObject = {}
     let allPlayButtonWithinTheDom;
     let remotePageDom;
@@ -67,10 +65,10 @@ async function createRecordingsObject(remoteUrl){
     //      - It should be further enhanced, by handling occassions when there aren't either any available alternate language in the navbar. Having a loading buffer or something idk.
     if (allPlayButtonWithinTheDom.length == 0) {
         // Initially Checking  to see if the broad language (not the dialectical America/British) is already an active element
-        if (remotePageDom.getElementsByClassName('active').length != 0){ 
+        if (remotePageDom.getElementsByClassName('active').length != 0) {
             alternateUrl = remotePageDom.getElementsByClassName('active')[0].getElementsByTagName('a')[0].getAttribute('href');
-        // , then fall back to the whichever first language in the horizonatl navbar
-        }else if (remotePageDom.getElementsByClassName('nav_langs')[0].firstElementChild.childElementCount != 0) {
+            // , then fall back to the whichever first language in the horizonatl navbar
+        } else if (remotePageDom.getElementsByClassName('nav_langs')[0].firstElementChild.childElementCount != 0) {
             alternateUrl = remotePageDom.getElementsByClassName('navLangItem')[0].getElementsByTagName('a')[0].getAttribute('href');
         }
         remotePageDom = await convertHtmlStringToDocumentObject('https://forvo.com/' + alternateUrl);
@@ -84,71 +82,71 @@ async function createRecordingsObject(remoteUrl){
         // Recording name
         let recordingName = allPlayButtonWithinTheDom.item(i).nextElementSibling.textContent;
         // Recording remote URL
-        let recordingUrl = Play(... playParameters);
+        let recordingUrl = Play(...playParameters);
 
         recordingsObject[recordingName] = [recordingUrl];
     }
     return (recordingsObject)
 }
 
-function createPopoverContainer(){
+function createPopoverContainer() {
     let popover = document.createElement('div');
-	popover.className = 'parent-popover'
-	document.body.appendChild(popover);
+    popover.className = 'parent-popover'
+    document.body.appendChild(popover);
 }
 
-async function appendingRecordings(remoteUrl, event){
-	let recordingsObject;
-	let popover = document.getElementsByClassName('parent-popover')[0]
-	let recordingsDiv = document.createElement('div')
+async function appendingRecordings(remoteUrl, event) {
+    let recordingsObject;
+    let popover = document.getElementsByClassName('parent-popover')[0]
+    let recordingsDiv = document.createElement('div')
     recordingsDiv.className = 'recordings-div'
-	popover.appendChild(recordingsDiv)
+    popover.appendChild(recordingsDiv)
 
-	// New ripped styling!
-	const selectedWordCoordinates = window.getSelection().getRangeAt(0).getBoundingClientRect()
-	const documentCoordinates = document.body.parentNode.getBoundingClientRect();
-	const selectedWordX = selectedWordCoordinates.x
-	const selectedWordY = selectedWordCoordinates.bottom - documentCoordinates.top
-	const selectedWordWidth = selectedWordCoordinates.width
-	const selectedWordHeight = selectedWordCoordinates.height
-	const popoverWidth = 300
-	const popoverHeight = 150
-	const leftRightMargin = 10
-	const bottomTopMargin = 5
-	const arrowNotchHeight = 10
+    // New ripped styling!
+    const selectedWordCoordinates = window.getSelection().getRangeAt(0).getBoundingClientRect()
+    const documentCoordinates = document.body.parentNode.getBoundingClientRect();
+    const selectedWordX = selectedWordCoordinates.x
+    const selectedWordY = selectedWordCoordinates.bottom - documentCoordinates.top
+    const selectedWordWidth = selectedWordCoordinates.width
+    const selectedWordHeight = selectedWordCoordinates.height
+    const popoverWidth = 300
+    const popoverHeight = 150
+    const leftRightMargin = 10
+    const bottomTopMargin = 5
+    const arrowNotchHeight = 10
 
-	if (selectedWordX + selectedWordWidth/2 - Math.ceil(popoverWidth/2) < 0) { // Appending 'word width' to the conditional check, was because of amplified word styling taking up much space, and skewing the arithmetic wizardy
-	  // I could've just substituted the following arithmetic wizardy with "leftRightMargin + 'px'", but I preferred a more 'logically appropriatet' approach
-	  popover.style.left = selectedWordX - Math.ceil(popoverWidth/2) + (0 - (selectedWordX - (popoverWidth/2))) + leftRightMargin + "px";
-	} else if ((selectedWordX + selectedWordWidth + popoverWidth/2) > window.innerWidth) {
-	  popover.style.left = selectedWordX + selectedWordWidth - Math.ceil(popoverWidth) + "px";
-	} else {
-	  popover.style.left = selectedWordX - ((popoverWidth/2) - (selectedWordWidth / 2)) + "px";
-	}
+    if (selectedWordX + selectedWordWidth / 2 - Math.ceil(popoverWidth / 2) < 0) { // Appending 'word width' to the conditional check, was because of amplified word styling taking up much space, and skewing the arithmetic wizardy
+        // I could've just substituted the following arithmetic wizardy with "leftRightMargin + 'px'", but I preferred a more 'logically appropriatet' approach
+        popover.style.left = selectedWordX - Math.ceil(popoverWidth / 2) + (0 - (selectedWordX - (popoverWidth / 2))) + leftRightMargin + "px";
+    } else if ((selectedWordX + selectedWordWidth + popoverWidth / 2) > window.innerWidth) {
+        popover.style.left = selectedWordX + selectedWordWidth - Math.ceil(popoverWidth) + "px";
+    } else {
+        popover.style.left = selectedWordX - ((popoverWidth / 2) - (selectedWordWidth / 2)) + "px";
+    }
 
-	if (selectedWordY + popover.offsetHeight >= window.innerHeight) {
-	  //popover.style.bottom = "20px";
-	  //popover.style.bottom = event.clientY + selectedWordHeight + bottomTopMargin + "px";
-	  console.log('Do some shit about it!')
-	  popover.style.top = selectedWordY + bottomTopMargin + arrowNotchHeight + "px";
-	} else {
-	  popover.style.top = selectedWordY + bottomTopMargin + arrowNotchHeight + "px";
-	}
+    if (selectedWordY + popover.offsetHeight >= window.innerHeight) {
+        //popover.style.bottom = "20px";
+        //popover.style.bottom = event.clientY + selectedWordHeight + bottomTopMargin + "px";
+        console.log('Do some shit about it!')
+        popover.style.top = selectedWordY + bottomTopMargin + arrowNotchHeight + "px";
+    } else {
+        popover.style.top = selectedWordY + bottomTopMargin + arrowNotchHeight + "px";
+    }
 
-	const arrowNotchXPosition = (selectedWordX - Number.parseInt(popover.style.left)) + (selectedWordWidth / 2)
+    const arrowNotchXPosition = (selectedWordX - Number.parseInt(popover.style.left)) + (selectedWordWidth / 2)
 
-	// Mainly to hide the scrollbar on chrome & opera & safari
-	let popoverStyleElement = document.getElementById('popover-style')
-	if (!popoverStyleElement){
-		popoverStyleElement = document.createElement('style')
-		popoverStyleElement.id = 'popover-style'
-		document.body.appendChild(popoverStyleElement)
-	}
+    // Mainly to hide the scrollbar on chrome & opera & safari
+    let popoverStyleElement = document.getElementById('popover-style')
+    if (!popoverStyleElement) {
+        popoverStyleElement = document.createElement('style')
+        popoverStyleElement.id = 'popover-style'
+        document.body.appendChild(popoverStyleElement)
+    }
     /*
     * TODO
     *   - The ability to dynamically allocate the z-index of the popover, so that when I place it just above the selected element, then the user scroll, it can get hidden below other element of higher index
     */
-	popoverStyleElement.innerHTML = `
+    popoverStyleElement.innerHTML = `
 		div.parent-popover {
 			color: black;
 			position: absolute;
@@ -206,22 +204,22 @@ async function appendingRecordings(remoteUrl, event){
 		}
 	`
 
-	recordingsObject = await createRecordingsObject(remoteUrl);
-	for (let i=0; i < Object.keys(recordingsObject).length; i++) {
-		let buttonRespectiveText = document.createElement('p')
-		let buttonElement = document.createElement('button')
-		let recordingListItem = document.createElement('div')
-		recordingListItem.className = 'recording-list-item'
-		buttonRespectiveText.textContent = Object.keys(recordingsObject)[i]
-		buttonElement.setAttribute('href', Object.values(recordingsObject)[i])
-		buttonRespectiveText.className = 'recording-name'
-		buttonElement.className = 'recording-button'
-		buttonElement.textContent = 'Play'            // Placholding content for now
-		recordingListItem.appendChild(buttonElement)
-		recordingListItem.appendChild(buttonRespectiveText)
-		recordingsDiv.appendChild(recordingListItem)
-	}
-	return (popover)
+    recordingsObject = await createRecordingsObject(remoteUrl);
+    for (let i = 0; i < Object.keys(recordingsObject).length; i++) {
+        let buttonRespectiveText = document.createElement('p')
+        let buttonElement = document.createElement('button')
+        let recordingListItem = document.createElement('div')
+        recordingListItem.className = 'recording-list-item'
+        buttonRespectiveText.textContent = Object.keys(recordingsObject)[i]
+        buttonElement.setAttribute('href', Object.values(recordingsObject)[i])
+        buttonRespectiveText.className = 'recording-name'
+        buttonElement.className = 'recording-button'
+        buttonElement.textContent = 'Play'            // Placholding content for now
+        recordingListItem.appendChild(buttonElement)
+        recordingListItem.appendChild(buttonRespectiveText)
+        recordingsDiv.appendChild(recordingListItem)
+    }
+    return (popover)
 }
 
 /* Code ranges might not be robust or thorough.
@@ -247,15 +245,15 @@ function detectHighlightedWordLanguage(word) {
         'Japanese': 'ja'
     }
     let languageUnicodeRanges = {
-        "English" : /^[a-zA-Z]+$/,
+        "English": /^[a-zA-Z]+$/,
         "Russian": /[\u0400-\u045F]/,
-        "Arabic" : /[\u0600-\u06FF]/,
-        "Persian" : /[\u0750-\u077F]/,
-        "Hebrew" : /[\u0590-\u05FF]/,
-        "Bengali" : /[\u0980-\u09FF]/,
-        "Greek" : /[\u0370-\u03FF]/,
-        "Georgian" : /[\u10A0-\u10FF]/,
-        "Thai" : /[\u0E00-\u0E7F]/,
+        "Arabic": /[\u0600-\u06FF]/,
+        "Persian": /[\u0750-\u077F]/,
+        "Hebrew": /[\u0590-\u05FF]/,
+        "Bengali": /[\u0980-\u09FF]/,
+        "Greek": /[\u0370-\u03FF]/,
+        "Georgian": /[\u10A0-\u10FF]/,
+        "Thai": /[\u0E00-\u0E7F]/,
         'Chinese': /[\u4E00-\u9FCC]/,
         'Japanese': /[\u3011-\u3096]/
     }
@@ -279,9 +277,8 @@ function detectHighlightedWordLanguage(word) {
 *               -Pause any video in the current tab, whereas pause any other running audio in any other tab (exception for the current one.)
 */
 async function playAudio(audioUrl) {
-    let audioContext = new AudioContext();
     let audio;
-    console.log(audioUrl)
+    let audioContext = new AudioContext();
     await fetchData(audioUrl, 'audio')
         .then(data => new Uint8Array(JSON.parse(data)).buffer)
         .then(arrayBuffer => audioContext.decodeAudioData(arrayBuffer))
@@ -312,67 +309,67 @@ document.addEventListener('click', function handleButtonclick(event) {
 })
 
 let clickTimeoutId;
-document.addEventListener('mouseup', () => { 	
-	// - The 'mouseup' is the most inclusive event. For instance 'dblclick' won't include dragged to highlight text.
-	// - The timeout is used to both 
-	// 		- Prevent consecutive adding & removing (causes flickering)
-	// 		- Different highlighting a word from Long passages
-	clearTimeout(clickTimeoutId)
-	clickTimeoutId = globalThis.setTimeout( async (event) => {
-		let highlightedValue = window.getSelection().toString().toLowerCase().trim();
-		let specialCharacters = ['.', '?', '!', '"', '\'', '-', '_', '@', '#', '(', ')', '{', '}']
-		specialCharacters.forEach((character) => {
+document.addEventListener('mouseup', () => {
+    // - The 'mouseup' is the most inclusive event. For instance 'dblclick' won't include dragged to highlight text.
+    // - The timeout is used to both 
+    // 		- Prevent consecutive adding & removing (causes flickering)
+    // 		- Different highlighting a word from Long passages
+    clearTimeout(clickTimeoutId)
+    clickTimeoutId = globalThis.setTimeout(async (event) => {
+        let highlightedValue = window.getSelection().toString().toLowerCase().trim();
+        let specialCharacters = ['.', '?', '!', '"', '\'', '-', '_', '@', '#', '(', ')', '{', '}']
+        specialCharacters.forEach((character) => {
             if (highlightedValue[0] === character) {
                 highlightedValue = highlightedValue.substring(1)
             } else if (highlightedValue[highlightedValue.length - 1] === character) {
                 highlightedValue = highlightedValue.substring(highlightedValue.length - 1, 0)
-			}
-		})
-		highlightedValue = highlightedValue.includes('·') ? highlightedValue.replaceAll('·', '') : highlightedValue 		// This special character gets includes sometimes, by google's search, thus eliminating it from the word, before sending the requested word to Forvo's web server.
-		let popoverElements = document.getElementsByClassName('parent-popover')
-		if (!!highlightedValue.length && highlightedValue.split(' ').length <= 2 && !popoverElements.length) { // I guess the last condition should be refined with something else (like for example a floating icon being visible or not.. somethig like that)
-			// Appending the popover container element
-			createPopoverContainer();
-			// Identifying the word language
-			let language_code = detectHighlightedWordLanguage(highlightedValue)
-			let remoteUrl = `https://forvo.com/search/${highlightedValue}/${language_code}`
-			// Append the pronunciation recordings to the popover
-			document.body.appendChild(await appendingRecordings(remoteUrl, event))
-		}
-	}, 200)
+            }
+        })
+        highlightedValue = highlightedValue.includes('·') ? highlightedValue.replaceAll('·', '') : highlightedValue 		// This special character gets includes sometimes, by google's search, thus eliminating it from the word, before sending the requested word to Forvo's web server.
+        let popoverElements = document.getElementsByClassName('parent-popover')
+        if (!!highlightedValue.length && highlightedValue.split('\n').length == 1 && highlightedValue.split(' ').length <= 2 && !popoverElements.length) { // I guess the last condition should be refined with something else (like for example a floating icon being visible or not.. somethig like that)
+            // Appending the popover container element
+            createPopoverContainer();
+            // Identifying the word language
+            let language_code = detectHighlightedWordLanguage(highlightedValue)
+            let remoteUrl = `https://forvo.com/search/${highlightedValue}/${language_code}`
+            // Append the pronunciation recordings to the popover
+            document.body.appendChild(await appendingRecordings(remoteUrl, event))
+        }
+    }, 200)
 })
 
 // Two events to handle the automatic removal of the tooltip (for more usability enhancement)
 function handleToolipRemoval(event) {
     let popoverElements = document.getElementsByClassName('parent-popover')
-	let eventTargetClassName = event.target.className
-	let eventTargetParentClassName = event.target.className
-	// The scroll behavior is rather a deficit in usability:
-	// 		- According to MY usage, I usually read sequentally, not hopping over the page upside down. Thus I won't be bothered while hopping to encounter a leftover popover hanging out.
-	// 		- having uniform form of removing the popover (i.e. clicking outside the popover) is more standard
-	// 		- The popover gets scrolled past, and thus hidden when:
-	// 			- The popover's inner recordings isn't a list, and the user scrolls for more recordings.
-	// 			- The user scroll all the way to the end of an actual recordings list, then keeps scrolling.
+    let eventTargetClassName = event.target.className
+    let eventTargetParentClassName = event.target.className
+    // The scroll behavior is rather a deficit in usability:
+    // 		- According to MY usage, I usually read sequentally, not hopping over the page upside down. Thus I won't be bothered while hopping to encounter a leftover popover hanging out.
+    // 		- having uniform form of removing the popover (i.e. clicking outside the popover) is more standard
+    // 		- The popover gets scrolled past, and thus hidden when:
+    // 			- The popover's inner recordings isn't a list, and the user scrolls for more recordings.
+    // 			- The user scroll all the way to the end of an actual recordings list, then keeps scrolling.
     if (event.type == 'scroll') {
         try {
             let selectedTextY = Math.round(document.getSelection().getRangeAt(0).getBoundingClientRect().y)
             if (window.scrollY < selectedTextY || window.scrollY > Math.round(selectedTextY)) {
                 //popoverElement.remove()
             }
-        } catch {}
+        } catch { }
     } else if (event.type == 'click') {
         // Remove the yet-to-be floating box, only if the user clicked in any area but within the box itself
         if (eventTargetClassName !== 'parent-popover' && eventTargetParentClassName !== 'recording-button' && popoverElements.length) {
-			for (let i=0; i<popoverElements.length; i++){
-				setTimeout(() => {
-					popoverElements[0].remove();
-				}, 0);
-			}
+            for (let i = 0; i < popoverElements.length; i++) {
+                setTimeout(() => {
+                    popoverElements[0].remove();
+                }, 0);
+            }
         }
     }
 }
 ['click', 'scroll'].forEach(function(eventElement) {
-	console.log('remvoing the popover')
+    console.log('remvoing the popover')
     window.addEventListener(eventElement, handleToolipRemoval, false)
 })
 
