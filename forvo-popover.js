@@ -54,16 +54,16 @@ function Play(a, b, c, d, e, f, g) {
 
 async function createRecordingsObject(remoteUrl) {
     let recordingsObject = {}
-    let allPlayButtonWithinTheDom;
+    let allPlayButtonsWithinDom;
     let remotePageDom;
     let alternateUrl;
 
     remotePageDom = await convertHtmlStringToDocumentObject(remoteUrl);
-    allPlayButtonWithinTheDom = remotePageDom.getElementsByClassName('play')
+    allPlayButtonsWithinDom = remotePageDom.getElementsByClassName('play')
 
     //  - If the initial requested page didn't entail any recordings, then fall back to the recording of the first language in the horizontal nav item bar.
     //      - It should be further enhanced, by handling occassions when there aren't either any available alternate language in the navbar. Having a loading buffer or something idk.
-    if (allPlayButtonWithinTheDom.length == 0) {
+    if (allPlayButtonsWithinDom.length == 0) {
         // Initially Checking  to see if the broad language (not the dialectical America/British) is already an active element
         if (remotePageDom.getElementsByClassName('active').length != 0) {
             alternateUrl = remotePageDom.getElementsByClassName('active')[0].getElementsByTagName('a')[0].getAttribute('href');
@@ -72,15 +72,15 @@ async function createRecordingsObject(remoteUrl) {
             alternateUrl = remotePageDom.getElementsByClassName('navLangItem')[0].getElementsByTagName('a')[0].getAttribute('href');
         }
         remotePageDom = await convertHtmlStringToDocumentObject('https://forvo.com/' + alternateUrl);
-        allPlayButtonWithinTheDom = remotePageDom.getElementsByClassName('play')
+        allPlayButtonsWithinDom = remotePageDom.getElementsByClassName('play')
     }
 
-    for (let i = 0; i < allPlayButtonWithinTheDom.length; i++) {
-        let playParameters = allPlayButtonWithinTheDom.item(i).getAttribute('onclick').split('(')[1].split(');')[0].split(',')
+    for (let button of allPlayButtonsWithinDom) {
+        const playParameters = button.getAttribute('onclick').split('(')[1].split(');')[0].split(',')
         // Using the 'replace' method instead of straightforwardly using 'replaceAll'. An alternative approach is to delete the modified prototype method, then restoring the original built-in object method e.g., String.prototype.replaceAll, as it gets overridden on some websites.
         playParameters.forEach((element, index) => playParameters[index] = element.split('').map((character) => character.replace(/['"]+/g, '')).join(''))
         // Recording name
-        let recordingName = allPlayButtonWithinTheDom.item(i).nextElementSibling.textContent;
+        let recordingName = button.nextElementSibling.textContent;
         // Recording remote URL
         let recordingUrl = Play(...playParameters);
 
@@ -107,8 +107,8 @@ async function appendingRecordings(remoteUrl, event) {
     const documentCoordinates = document.body.parentNode.getBoundingClientRect();
     const selectedWordX = selectedWordCoordinates.x
     const selectedWordY = selectedWordCoordinates.bottom - documentCoordinates.top
-    const selectedWordWidth = selectedWordCoordinates.width
     const selectedWordHeight = selectedWordCoordinates.height
+    const selectedWordWidth = selectedWordCoordinates.width
     const popoverWidth = 300
     const popoverHeight = 150
     const leftRightMargin = 10
@@ -266,8 +266,8 @@ function detectHighlightedWordLanguage(word) {
     return (forvoLanguageCodes[wordLanguage])
 }
 
-// Audio APi
 /*
+*   - Audio APi
 *   - Functionality
 *       - Fetch & Play audio files from the the provided direct audio file URL.
 *   - TODO
@@ -310,14 +310,16 @@ document.addEventListener('click', function handleButtonclick(event) {
 
 let clickTimeoutId;
 document.addEventListener('mouseup', () => {
-    // - The 'mouseup' is the most inclusive event. For instance 'dblclick' won't include dragged to highlight text.
-    // - The timeout is used to both 
-    // 		- Prevent consecutive adding & removing (causes flickering)
-    // 		- Different highlighting a word from Long passages
+    /*
+     *  - The 'mouseup' is the most inclusive event. For instance 'dblclick' won't include dragged to highlight text.
+     *  - The timeout is used to both 
+     *		- Prevent consecutive adding & removing (causes flickering)
+     *      - Different highlighting a word from Long passages
+    */
     clearTimeout(clickTimeoutId)
     clickTimeoutId = globalThis.setTimeout(async (event) => {
         let highlightedValue = window.getSelection().toString().toLowerCase().trim();
-        let specialCharacters = ['.', '?', '!', '"', '\'', '-', '_', '@', '#', '(', ')', '{', '}']
+        const specialCharacters = ['.', '?', '!', '"', '\'', '-', '_', '@', '#', '(', ')', '{', '}']
         specialCharacters.forEach((character) => {
             if (highlightedValue[0] === character) {
                 highlightedValue = highlightedValue.substring(1)
@@ -339,7 +341,9 @@ document.addEventListener('mouseup', () => {
     }, 200)
 })
 
-// Two events to handle the automatic removal of the tooltip (for more usability enhancement)
+/*
+ * - Two events to handle the automatic removal of the tooltip (for more usability enhancement)
+*/
 function handleToolipRemoval(event) {
     let popoverElements = document.getElementsByClassName('parent-popover')
     let eventTargetClassName = event.target.className
@@ -360,9 +364,9 @@ function handleToolipRemoval(event) {
     } else if (event.type == 'click') {
         // Remove the yet-to-be floating box, only if the user clicked in any area but within the box itself
         if (eventTargetClassName !== 'parent-popover' && eventTargetParentClassName !== 'recording-button' && popoverElements.length) {
-            for (let i = 0; i < popoverElements.length; i++) {
+            for (let popoverElement of popoverElements) {
                 setTimeout(() => {
-                    popoverElements[0].remove();
+                    popoverElement.remove();
                 }, 0);
             }
         }
