@@ -9,7 +9,7 @@
     },
     "content_scripts": [{
         "js": [
-            "forvo-popover.js"
+            "content.bundle.js"
         ],
         "run_at": "document_idle",
         "all_frames": true,
@@ -17,6 +17,7 @@
             "<all_urls>"
         ]
     }],
+    "background": { "service_worker": "background.bundle.js" },
     "permissions": [
         "tabs",
         "activeTab",
@@ -27,11 +28,9 @@
     	"https://forvo.com/",
     	"https://*.forvo.com/"
     ],
-    "background": {
-        "service_worker": "background.js"
-    },
     "action": {
         "default_popup": "index.html",
         "default_title": "TranCore"
-    }
+    },
+    "type": "module"
 }

@@ -1,30 +1,6 @@
-// ==UserScript==
-// @name         ovo
-// @namespace    http://tampermonkey.net/
-// @version      0.6
-// @description  Pronounce words on the go
-// @author       Polendina
-// @match        *://*/*
-// @icon         data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==
-// @grant        GM_xmlhttpRequest
-// @run-at       document-end
-// @require      https://greasyfork.org/scripts/421384-gm-fetch/code/GM_fetch.js?version=898562
-// ==/UserScript==
-
-// This link should be further developed to become a dynamic function that grabs the highlighted word (word not sentence), then creates a link for it (if the link is broken maybe, then exception handling should be further developed at later stage ... This is just testing stuff later on)
-function loadExternalLibs() {
-    let shareThisLib = 'https://cdn.jsdelivr.net/npm/@floating-ui/core@1.0.1'
-    GM_fetch(shareThisLib, {
-        method: 'GET'
-    })
-        .then((response) => {
-            let newScriptElement = document.createElement('script')
-            newScriptElement.innerText = response.responseText;
-            newScriptElement.classList += 'Floating-ui'
-            document.head.appendChild(newScriptElement)
-        })
-}
-//loadExternalLibs()
+// const tippy = require('tippy.js')
+// import { tippy } from 'tippy.js';
+import tippy from 'tippy.js/dist/tippy-bundle.umd.min.js';
 
 async function fetchData(remoteUrl, dataType) {
     return new Promise((resolve, reject) => {
@@ -44,7 +20,7 @@ async function convertHtmlStringToDocumentObject(remoteUrl) {
     return (remotePageDom);
 }
 
-// A stripped down & succinct version of the original scraped website play funciton
+// A stripped down & succinct version of the original scraped website play function
 function Play(a, b, c, d, e, f, g) {
     let defaultProtocol = 'https:';
     let _AUDIO_HTTP_HOST = 'audio12.forvo.com';
@@ -61,8 +37,8 @@ async function createRecordingsObject(remoteUrl) {
     remotePageDom = await convertHtmlStringToDocumentObject(remoteUrl);
     allPlayButtonsWithinDom = remotePageDom.getElementsByClassName('play')
 
-    //  - If the initial requested page didn't entail any recordings, then fall back to the recording of the first language in the horizontal nav item bar.
-    //      - It should be further enhanced, by handling occassions when there aren't either any available alternate language in the navbar. Having a loading buffer or something idk.
+    //  - If the initial requested page didn't entail any recordings, then fall back to the recording of the first language in the horizontal av item bar.
+    //      - It should be further enhanced, by handling occasions when there aren't either any available alternate language in the navbar. Having a loading buffer or something idk.
     if (allPlayButtonsWithinDom.length == 0) {
         // Initially Checking  to see if the broad language (not the dialectical America/British) is already an active element
         if (remotePageDom.getElementsByClassName('active').length != 0) {
@@ -232,7 +208,8 @@ async function appendingRecordings(remoteUrl, event) {
 function detectHighlightedWordLanguage(word) {
     let wordLanguage;
     let forvoLanguageCodes = {
-        'English': 'en_usa',
+        // 'English': 'en_usa',
+        'English': 'de',
         'Russian': 'ru',
         'Arabic': 'ar',
         'Persian': 'fa',
@@ -419,3 +396,85 @@ function handleToolipRemoval(event) {
 /* Changelog
 *  - If the requested word, didn't find any available recordings, then it falls back to the first langauge in the horizontal navbar.
 */
+
+
+// const tooltip = tippy(document.body, {
+//     content(reference) {
+//         const selection = document.getSelection();
+//         if (selection && selection.toString()) {
+//             return (selection.toString());
+//         } else {
+//             return ("Please select some text!")
+//         }
+//     },
+//     sticky: true,
+//     content: selection.toString()
+// })
+// document.addEventListener("mouseup", (event) => {
+//     const selection = window.getSelection();
+//     if (selection && selection.toString()) {
+//         console.log(selection.toString())
+//         tooltip.show();
+//         tooltip.popperInstance.reference = selection.getRangeAt(0).getBoundingClientRect();
+//         tooltip.popperInstance.update();
+//     }
+// })
+
+const selectionRef = document.querySelector('#rcnt')
+console.log("Hello world")
+const [instance] = tippy('#rcnt', {
+  content: 'tooltip',
+  sticky: true
+})
+// inspired by https://jsfiddle.net/joktrpkz/7/
+// const selection = window.getSelection()
+window.addEventListener('mouseup', (event) => {
+  if (!selection.isCollapsed) {
+    const { left, top, width, height } = selection.getRangeAt(0).getBoundingClientRect()
+    selectionRef.style.left = `${left}px`
+    selectionRef.style.top = `${top}px`
+    selectionRef.style.width = `${width}px`
+    selectionRef.style.height = `${height}px`
+
+    instance.show()
+  }
+})
+window.addEventListener('mousedown', (event) => {
+  instance.hide()
+})
+
+
+let selectionReff = document.createElement('style')
+selectionReff.innerHTML = `
+    #selection-ref { 
+        position: absolute;
+
+        /* debug only styles */
+        background: rgba(200,0,0,0.2);
+        pointer-events: none;
+    }
+`
+document.body.appendChild(selectionReff)
+
+// const selectionRef = document.querySelector('#selection-ref')
+// const [instance] = tippy('#selection-ref', {
+//   content: 'tooltip',
+//   sticky: true
+// })
+
+// inspired by https://jsfiddle.net/joktrpkz/7/
+const selection = window.getSelection()
+window.addEventListener('mouseup', (event) => {
+
+  if (!selection.isCollapsed) {
+    console.log(document.querySelector('#selection-ref'))
+    const { left, top, width, height } = selection.getRangeAt(0).getBoundingClientRect()
+    
+    selectionRef.style.left = `${left}px`
+    selectionRef.style.top = `${top}px`
+    selectionRef.style.width = `${width}px`
+    selectionRef.style.height = `${height}px`
+  
+    instance.show()
+  }
+})
