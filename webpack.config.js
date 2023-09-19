@@ -9,8 +9,8 @@ const paths = {
 
 module.exports = {
     entry: {
-        background: path.join(__dirname, 'src', 'pages', 'background', 'index.js'),
-        content: path.join(__dirname, 'src','pages', 'content', 'index.js')
+        content: path.join(__dirname, 'src','pages', 'content', 'index.js'),
+        background: path.join(__dirname, 'src', 'pages', 'background', 'index.js')
     },
     mode: 'development',
     // target: "web",
@@ -45,7 +45,7 @@ module.exports = {
             // extensionPath: paths.src,
             extensionPath: path.join(__dirname, 'build'),
             autoReload: true
-        }),
+        })
     ],
     resolve: {
         extensions: ['.js', '.jsx'],

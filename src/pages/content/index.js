@@ -1,15 +1,11 @@
-// const tippy = require('tippy.js')
-// import { tippy } from 'tippy.js';
-import tippy from 'tippy.js/dist/tippy-bundle.umd.min.js';
+import { tippy } from 'tippy.js';
 
 async function fetchData(remoteUrl, dataType) {
     return new Promise((resolve, reject) => {
-        try {
-            chrome.runtime.sendMessage({ msg: dataType, remoteSiteUrl: remoteUrl }, async (response) => {
-                resolve(response);
-            })
-        } catch (exception) {
-        }
+        chrome.runtime.sendMessage({ msg: dataType, remoteSiteUrl: remoteUrl }, async (response) => {
+            resolve(response);
+            reject(response)
+        })
     })
 }
 
@@ -309,6 +305,8 @@ document.addEventListener('mouseup', () => {
         if (!!highlightedValue.length && highlightedValue.split('\n').length == 1 && highlightedValue.split(' ').length <= 2 && !popoverElements.length) { // I guess the last condition should be refined with something else (like for example a floating icon being visible or not.. somethig like that)
             // Appending the popover container element
             createPopoverContainer();
+            // Append translations
+            appendTranslation(highlightedValue)
             // Identifying the word language
             let language_code = detectHighlightedWordLanguage(highlightedValue)
             let remoteUrl = `https://forvo.com/search/${highlightedValue}/${language_code}`
@@ -317,6 +315,17 @@ document.addEventListener('mouseup', () => {
         }
     }, 200)
 })
+
+function appendTranslation(highlightedValue) {
+    console.log("More...")
+    console.log(highlightedValue)
+    ; (async () => {
+        let j = document.createElement('div')
+        j.className = 'recording-list-item'
+        j.textContent = await fetchData(highlightedValue, 'word')
+        document.getElementsByClassName('recordings-div')[0].appendChild(j)
+    })()
+}
 
 /*
  * - Two events to handle the automatic removal of the tooltip (for more usability enhancement)
@@ -420,28 +429,29 @@ function handleToolipRemoval(event) {
 //     }
 // })
 
-const selectionRef = document.querySelector('#rcnt')
-console.log("Hello world")
-const [instance] = tippy('#rcnt', {
-  content: 'tooltip',
-  sticky: true
-})
-// inspired by https://jsfiddle.net/joktrpkz/7/
-// const selection = window.getSelection()
-window.addEventListener('mouseup', (event) => {
-  if (!selection.isCollapsed) {
-    const { left, top, width, height } = selection.getRangeAt(0).getBoundingClientRect()
-    selectionRef.style.left = `${left}px`
-    selectionRef.style.top = `${top}px`
-    selectionRef.style.width = `${width}px`
-    selectionRef.style.height = `${height}px`
+// const selectionRef = document.querySelector('#rcnt')
+// console.log("Hello world")
+// const [instance] = tippy('#rcnt', {
+//   content: 'tooltip',
+//   sticky: true
+// })
 
-    instance.show()
-  }
-})
-window.addEventListener('mousedown', (event) => {
-  instance.hide()
-})
+// const selection = window.getSelection()
+
+// window.addEventListener('mouseup', (event) => {
+//   if (!selection.isCollapsed) {
+//     const { left, top, width, height } = selection.getRangeAt(0).getBoundingClientRect()
+//     selectionRef.style.left = `${left}px`
+//     selectionRef.style.top = `${top}px`
+//     selectionRef.style.width = `${width}px`
+//     selectionRef.style.height = `${height}px`
+// 
+//     instance.show()
+//   }
+// })
+// window.addEventListener('mousedown', (event) => {
+//   instance.hide()
+// })
 
 
 let selectionReff = document.createElement('style')
