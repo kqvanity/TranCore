@@ -302,7 +302,7 @@ document.addEventListener('mouseup', () => {
         })
         highlightedValue = highlightedValue.includes('·') ? highlightedValue.replaceAll('·', '') : highlightedValue 		// This special character gets includes sometimes, by google's search, thus eliminating it from the word, before sending the requested word to Forvo's web server.
         let popoverElements = document.getElementsByClassName('parent-popover')
-        if (!!highlightedValue.length && highlightedValue.split('\n').length == 1 && highlightedValue.split(' ').length <= 2 && !popoverElements.length) { // I guess the last condition should be refined with something else (like for example a floating icon being visible or not.. somethig like that)
+        if (!!highlightedValue.length && !popoverElements.length) { // I guess the last condition should be refined with something else (like for example a floating icon being visible or not.. somethig like that)
             // Appending the popover container element
             createPopoverContainer();
             // Append translations
@@ -321,10 +321,29 @@ function appendTranslation(highlightedValue) {
     console.log(highlightedValue)
     ; (async () => {
         let j = document.createElement('div')
-        j.className = 'recording-list-item'
-        j.textContent = await fetchData(highlightedValue, 'word')
+        j.classList.add('recording-list-item')
+        j.classList.add('translation')
+        j.textContent = await parseGoogleTranslateResponse(highlightedValue)
         document.getElementsByClassName('recordings-div')[0].appendChild(j)
     })()
+}
+
+async function parseGoogleTranslateResponse(word) {
+    let response = await fetchData(word, 'word')
+    let returnVal = ''
+    try {
+        returnVal += `[${response.spell.spell_res.toString()}]`
+    } catch {}
+    try {
+        response.dict.forEach (element => {
+            returnVal += `(${element.pos})\n`
+            returnVal += `${element.terms.toString()}\n`
+        })
+    } catch {
+        returnVal += `(Sentence)\n`
+        returnVal += `${response.sentences[0].trans}`
+    }
+    return (returnVal)
 }
 
 /*

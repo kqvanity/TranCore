@@ -12,8 +12,10 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
             responseData = await response.text()
         } else if (request.msg == 'word') {
             try {
-                let jsonResponse = await fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=en&dt=t&q=${encodeURIComponent(request.remoteSiteUrl)}`)
-                responseData = (await jsonResponse.json())[0][0][0]
+                let jsonResponse = await fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=de&tl=en&dj=1&dt=t&dt=ld&dt=qca&dt=rm&dt=bd&q=${encodeURIComponent(request.remoteSiteUrl)}`, {
+                    method: 'GET',
+                })
+                responseData = await jsonResponse.json()
             } catch(e) {
                 responseData = `Catch ${e.message}`
             }
