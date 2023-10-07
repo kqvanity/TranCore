@@ -351,8 +351,7 @@ async function parseGoogleTranslateResponse(word) {
 */
 function handleToolipRemoval(event) {
     let popoverElements = document.getElementsByClassName('parent-popover')
-    let eventTargetClassName = event.target.className
-    let eventTargetParentClassName = event.target.className
+    let eventTargetClassName = event.target.parentNode.className
     // The scroll behavior is rather a deficit in usability:
     // 		- According to MY usage, I usually read sequentally, not hopping over the page upside down. Thus I won't be bothered while hopping to encounter a leftover popover hanging out.
     // 		- having uniform form of removing the popover (i.e. clicking outside the popover) is more standard
@@ -368,7 +367,7 @@ function handleToolipRemoval(event) {
         } catch { }
     } else if (event.type == 'click') {
         // Remove the yet-to-be floating box, only if the user clicked in any area but within the box itself
-        if (eventTargetClassName !== 'parent-popover' && eventTargetParentClassName !== 'recording-button' && popoverElements.length) {
+        if (!['parent-popover',  'recordings-div', 'recording-button', 'recording-list-item', 'recording-list-item translation'].includes(event.target.parentElement.className) && popoverElements.length) {
             for (let popoverElement of popoverElements) {
                 setTimeout(() => {
                     popoverElement.remove();
