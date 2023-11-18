@@ -1,65 +1,12 @@
-import { tippy } from 'tippy.js';
+import './tippy'
+import {parseGoogleTranslateResponse} from "./translation/Translation";
+import tippy from "tippy.js";
+import {playAudio} from "./pronunciation/audio";
+import {retrieveRecordings} from "./pronunciation/forvo";
+import {sortRecordings} from "./pronunciation/utils";
+import {search} from "fast-fuzzy";
 
-async function fetchData(remoteUrl, dataType) {
-    return new Promise((resolve, reject) => {
-        chrome.runtime.sendMessage({ msg: dataType, remoteSiteUrl: remoteUrl }, async (response) => {
-            resolve(response);
-            reject(response)
-        })
-    })
-}
-
-async function convertHtmlStringToDocumentObject(remoteUrl) {
-    let plainPageTextValue = await fetchData(remoteUrl, 'document');
-    let parser = new DOMParser();
-    let remotePageDom = parser.parseFromString(plainPageTextValue, 'text/html');
-    return (remotePageDom);
-}
-
-// A stripped down & succinct version of the original scraped website play function
-function Play(a, b, c, d, e, f, g) {
-    let defaultProtocol = 'https:';
-    let _AUDIO_HTTP_HOST = 'audio12.forvo.com';
-    b = defaultProtocol + "//" + _AUDIO_HTTP_HOST + "/mp3/" + atob(b);
-    return (b)
-}
-
-async function createRecordingsObject(remoteUrl) {
-    let recordingsObject = {}
-    let allPlayButtonsWithinDom;
-    let remotePageDom;
-    let alternateUrl;
-
-    remotePageDom = await convertHtmlStringToDocumentObject(remoteUrl);
-    allPlayButtonsWithinDom = remotePageDom.getElementsByClassName('play')
-
-    //  - If the initial requested page didn't entail any recordings, then fall back to the recording of the first language in the horizontal av item bar.
-    //      - It should be further enhanced, by handling occasions when there aren't either any available alternate language in the navbar. Having a loading buffer or something idk.
-    if (allPlayButtonsWithinDom.length == 0) {
-        // Initially Checking  to see if the broad language (not the dialectical America/British) is already an active element
-        if (remotePageDom.getElementsByClassName('active').length != 0) {
-            alternateUrl = remotePageDom.getElementsByClassName('active')[0].getElementsByTagName('a')[0].getAttribute('href');
-            // , then fall back to the whichever first language in the horizonatl navbar
-        } else if (remotePageDom.getElementsByClassName('nav_langs')[0].firstElementChild.childElementCount != 0) {
-            alternateUrl = remotePageDom.getElementsByClassName('navLangItem')[0].getElementsByTagName('a')[0].getAttribute('href');
-        }
-        remotePageDom = await convertHtmlStringToDocumentObject('https://forvo.com/' + alternateUrl);
-        allPlayButtonsWithinDom = remotePageDom.getElementsByClassName('play')
-    }
-
-    for (let button of allPlayButtonsWithinDom) {
-        const playParameters = button.getAttribute('onclick').split('(')[1].split(');')[0].split(',')
-        // Using the 'replace' method instead of straightforwardly using 'replaceAll'. An alternative approach is to delete the modified prototype method, then restoring the original built-in object method e.g., String.prototype.replaceAll, as it gets overridden on some websites.
-        playParameters.forEach((element, index) => playParameters[index] = element.split('').map((character) => character.replace(/['"]+/g, '')).join(''))
-        // Recording name
-        let recordingName = button.nextElementSibling.textContent;
-        // Recording remote URL
-        let recordingUrl = Play(...playParameters);
-
-        recordingsObject[recordingName] = [recordingUrl];
-    }
-    return (recordingsObject)
-}
+const {fuzzy} = require("fast-fuzzy")
 
 function createPopoverContainer() {
     let popover = document.createElement('div');
@@ -67,8 +14,8 @@ function createPopoverContainer() {
     document.body.appendChild(popover);
 }
 
-async function appendingRecordings(remoteUrl, event) {
-    let recordingsObject;
+async function appendingRecordings(word) {
+    let recordings;
     let popover = document.getElementsByClassName('parent-popover')[0]
     let recordingsDiv = document.createElement('div')
     recordingsDiv.className = 'recordings-div'
@@ -176,14 +123,18 @@ async function appendingRecordings(remoteUrl, event) {
 		}
 	`
 
-    recordingsObject = await createRecordingsObject(remoteUrl);
-    for (let i = 0; i < Object.keys(recordingsObject).length; i++) {
+    recordings = search(word, await retrieveRecordings(word), {
+        returnMatchData: true,
+        keySelector: (obj) => obj.title,
+        threshold: 0.0
+    }).map((object) => object.item)
+    for (let recording of recordings) {
         let buttonRespectiveText = document.createElement('p')
         let buttonElement = document.createElement('button')
         let recordingListItem = document.createElement('div')
         recordingListItem.className = 'recording-list-item'
-        buttonRespectiveText.textContent = Object.keys(recordingsObject)[i]
-        buttonElement.setAttribute('href', Object.values(recordingsObject)[i])
+        buttonRespectiveText.textContent = recording.title
+        buttonElement.setAttribute('href', recording.url)
         buttonRespectiveText.className = 'recording-name'
         buttonElement.className = 'recording-button'
         buttonElement.textContent = 'Play'            // Placholding content for now
@@ -191,81 +142,11 @@ async function appendingRecordings(remoteUrl, event) {
         recordingListItem.appendChild(buttonRespectiveText)
         recordingsDiv.appendChild(recordingListItem)
     }
+    // for (let i = 0; i < Object.keys(recordings).length; i++) {
+    // }
     return (popover)
 }
 
-/* Code ranges might not be robust or thorough.
-*  -Robust in the sense of mistakenly detecting a word that has letters that falls uner another more prioritized language's code range.
-*        -For example through testing, Arabic overrides Persian. Same things for languages that rely on the Latin / cyrillic alpahbet
-*        -Testing words ['Hello', 'российское', 'علم', 'دانشگاه', 'הַקֹּדֶשׁ', 'আছে', 'Καλημέρα', 'კვერცხი', 'สวัสดี', '爱', 'はい']
-*  -Thorough, in the sense of not including all languagee
-*  -If inconsistent behavior started to arised, choose a static fallback language of choice
-*/
-function detectHighlightedWordLanguage(word) {
-    let wordLanguage;
-    let forvoLanguageCodes = {
-        // 'English': 'en_usa',
-        'English': 'de',
-        'Russian': 'ru',
-        'Arabic': 'ar',
-        'Persian': 'fa',
-        'Hebrew': 'he',
-        'Bengali': 'bn',
-        'Greek': 'el',
-        'Georgian': 'ka',
-        'Thai': 'th',
-        'Chinese': 'zh',
-        'Japanese': 'ja'
-    }
-    let languageUnicodeRanges = {
-        "English": /^[a-zA-Z]+$/,
-        "Russian": /[\u0400-\u045F]/,
-        "Arabic": /[\u0600-\u06FF]/,
-        "Persian": /[\u0750-\u077F]/,
-        "Hebrew": /[\u0590-\u05FF]/,
-        "Bengali": /[\u0980-\u09FF]/,
-        "Greek": /[\u0370-\u03FF]/,
-        "Georgian": /[\u10A0-\u10FF]/,
-        "Thai": /[\u0E00-\u0E7F]/,
-        'Chinese': /[\u4E00-\u9FCC]/,
-        'Japanese': /[\u3011-\u3096]/
-    }
-    Object.entries(languageUnicodeRanges).forEach(([key, value]) => {
-        if (value.test(word) === true) {
-            wordLanguage = key;
-        }
-    })
-    if (wordLanguage === undefined) wordLanguage = 'English'
-    return (forvoLanguageCodes[wordLanguage])
-}
-
-/*
-*   - Audio APi
-*   - Functionality
-*       - Fetch & Play audio files from the the provided direct audio file URL.
-*   - TODO
-*       - The ability to pause any currently-running audio (at other tabs), before playing the next audio.
-*       - If two audios files are pressed consecutively, then the preferred behavior is to stop the current one, and play the next one.
-*         - I guess The way to go about thiis would *
-*               -Pause any video in the current tab, whereas pause any other running audio in any other tab (exception for the current one.)
-*/
-async function playAudio(audioUrl) {
-    let audio;
-    let audioContext = new AudioContext();
-    await fetchData(audioUrl, 'audio')
-        .then(data => new Uint8Array(JSON.parse(data)).buffer)
-        .then(arrayBuffer => audioContext.decodeAudioData(arrayBuffer))
-        .then(decodedAudio => {
-            audio = decodedAudio;
-        });
-    (async function playback() {
-        const playSound = audioContext.createBufferSource();
-        playSound.buffer = audio;
-        playSound.connect(audioContext.destination);
-        playSound.start(audioContext.currentTime);
-        audioContext.resume();
-    })()
-}
 
 let audioRecordingsButtons = Array.from(document.getElementsByClassName('recording-button'))
 audioRecordingsButtons.forEach((button) => {
@@ -307,11 +188,7 @@ document.addEventListener('mouseup', () => {
             createPopoverContainer();
             // Append translations
             appendTranslation(highlightedValue)
-            // Identifying the word language
-            let language_code = detectHighlightedWordLanguage(highlightedValue)
-            let remoteUrl = `https://forvo.com/search/${highlightedValue}/${language_code}`
-            // Append the pronunciation recordings to the popover
-            document.body.appendChild(await appendingRecordings(remoteUrl, event))
+            document.body.appendChild(await appendingRecordings(highlightedValue))
         }
     }, 200)
 })
@@ -319,31 +196,13 @@ document.addEventListener('mouseup', () => {
 function appendTranslation(highlightedValue) {
     console.log("More...")
     console.log(highlightedValue)
-    ; (async () => {
+    ;(async () => {
         let j = document.createElement('div')
         j.classList.add('recording-list-item')
         j.classList.add('translation')
         j.textContent = await parseGoogleTranslateResponse(highlightedValue)
         document.getElementsByClassName('recordings-div')[0].appendChild(j)
     })()
-}
-
-async function parseGoogleTranslateResponse(word) {
-    let response = await fetchData(word, 'word')
-    let returnVal = ''
-    try {
-        returnVal += `[${response.spell.spell_res.toString()}]`
-    } catch {}
-    try {
-        response.dict.forEach (element => {
-            returnVal += `(${element.pos})\n`
-            returnVal += `${element.terms.toString()}\n`
-        })
-    } catch {
-        returnVal += `(Sentence)\n`
-        returnVal += `${response.sentences[0].trans}`
-    }
-    return (returnVal)
 }
 
 /*
@@ -364,10 +223,11 @@ function handleToolipRemoval(event) {
             if (window.scrollY < selectedTextY || window.scrollY > Math.round(selectedTextY)) {
                 //popoverElement.remove()
             }
-        } catch { }
+        } catch {
+        }
     } else if (event.type == 'click') {
         // Remove the yet-to-be floating box, only if the user clicked in any area but within the box itself
-        if (!['parent-popover',  'recordings-div', 'recording-button', 'recording-list-item', 'recording-list-item translation'].includes(event.target.parentElement.className) && popoverElements.length) {
+        if (!['parent-popover', 'recordings-div', 'recording-button', 'recording-list-item', 'recording-list-item translation'].includes(event.target.parentElement.className) && popoverElements.length) {
             for (let popoverElement of popoverElements) {
                 setTimeout(() => {
                     popoverElement.remove();
@@ -376,37 +236,11 @@ function handleToolipRemoval(event) {
         }
     }
 }
-['click', 'scroll'].forEach(function(eventElement) {
+
+['click', 'scroll'].forEach(function (eventElement) {
     console.log('remvoing the popover')
     window.addEventListener(eventElement, handleToolipRemoval, false)
 })
-
-/*
- * TODO
- * - Implement some kind of caching for previously loaded words.
- * - [x] The Ability to detect the word language
- *      - Enahncing the detection capability using external robust API.
- * - Showing a more robust tooltip UI.
- *      - Fix textarea stray tooltip glitch.
- *      - Changing the play button icon.
- *      - A more expanded and structured layout for the tooltip.
- * - Further refinement on the audio i..e displaying the audio, then closing the previous one if another is played (preventing collapsing/overlapping)
- * - Adding the ability to load additional pronunciations.
- *   	- The link to load additional pronunciations will be conditionally/optionally displayed, depending on whether or not there's even additional pronunciations.
- *   		- The check of whether additional pronunciations are existent is done with the help of check of an rock-bottom element at the initial page.
- * - Adding the ability to load other additional translations.
- *   	- This can be achieved with the help of a small link on top of the pronunciations.
- *   		- When the link is clicked, and everything is fetched, and ready to be displayed, it should substitute the current pronunciations view, with the translations one, but with the option to go back.
- *   			- I guess i should be targeting the recocrdingsDiv for that.
- * - [x] The ability to fall back to generic English (British/American) translation, if either British/American is devoid of pronunciation, but the general English has translations
- * - [x] Avoid selecting non-alphabetical characters
- * - [x] Add support for phrasal verbs, by having a threshold of 2 words, as the maximum allowed limit of selected words
- * - Stop any currently running sounds before continuing to run any next one
- * - Instead of trying so hardly to highlight a word that's embedded in a link (trying hard to highlight the word without click the link), add the ability to hover the mouse cursor for a bit, then an icon should pop up asking whether to show pronunciation for the currently hovered-over word
- *      - The 'mouseover' event should be a good starting point.
- * - Another forbidden character should be added to the 'space' character. I guess a uniform list of them would be more appropriate.
- * - Substitute the first lower direct pronunciation, with a hovering popover (on the top), displaying options for either translation, pronunciation, or other stuff
-**/
 
 /* BUG
  * - [x] Selecting multiple words i.e. phrases, does get a word of the phrase as the chosen one, then it exhibit an astray popover.
@@ -419,33 +253,6 @@ function handleToolipRemoval(event) {
  * - Clicking inside the popover, but outside the click button, would close the popover
  * - CSS Inheritance does take effect sometimes, when you don't explicitly set the CSS property to the popover yourself.
  */
-
-/* Changelog
-*  - If the requested word, didn't find any available recordings, then it falls back to the first langauge in the horizontal navbar.
-*/
-
-
-// const tooltip = tippy(document.body, {
-//     content(reference) {
-//         const selection = document.getSelection();
-//         if (selection && selection.toString()) {
-//             return (selection.toString());
-//         } else {
-//             return ("Please select some text!")
-//         }
-//     },
-//     sticky: true,
-//     content: selection.toString()
-// })
-// document.addEventListener("mouseup", (event) => {
-//     const selection = window.getSelection();
-//     if (selection && selection.toString()) {
-//         console.log(selection.toString())
-//         tooltip.show();
-//         tooltip.popperInstance.reference = selection.getRangeAt(0).getBoundingClientRect();
-//         tooltip.popperInstance.update();
-//     }
-// })
 
 // const selectionRef = document.querySelector('#rcnt')
 // console.log("Hello world")
@@ -494,15 +301,31 @@ document.body.appendChild(selectionReff)
 const selection = window.getSelection()
 window.addEventListener('mouseup', (event) => {
 
-  if (!selection.isCollapsed) {
-    console.log(document.querySelector('#selection-ref'))
-    const { left, top, width, height } = selection.getRangeAt(0).getBoundingClientRect()
-    
-    selectionRef.style.left = `${left}px`
-    selectionRef.style.top = `${top}px`
-    selectionRef.style.width = `${width}px`
-    selectionRef.style.height = `${height}px`
-  
-    instance.show()
-  }
+    if (!selection.isCollapsed) {
+        console.log(document.querySelector('#selection-ref'))
+        const {left, top, width, height} = selection.getRangeAt(0).getBoundingClientRect()
+
+        selectionRef.style.left = `${left}px`
+        selectionRef.style.top = `${top}px`
+        selectionRef.style.width = `${width}px`
+        selectionRef.style.height = `${height}px`
+
+        instance.show()
+    }
 })
+
+document.addEventListener("mouseup", (event) => {
+    const selection = window.getSelection();
+    // if (selection && selection.toString()) {
+    console.log(`${selection.toString()} is ...`)
+    let element = document.createElement('div')
+    element.textContent = "More...."
+    const instance = tippy(element)
+    instance.show()
+    instance.popperInstance.reference = document.getElementById("sign-up")
+    // tooltip.popperInstance.reference = selection.getRangeAt(0).getBoundingClientRect();
+    // tooltip.popperInstance.update();
+    // }
+})
+
+const template = document.getElementById('template')

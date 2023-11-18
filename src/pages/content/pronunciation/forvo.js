@@ -20,7 +20,7 @@ async function loadSingleWords(url) {
     const languageItems = (await loadJsonResponse(url))['data'][0]['items']
     for (let languageItem of languageItems) {
         recordings.push({
-            word: languageItem['original'],
+            title: languageItem['original'],
             url:  languageItem['standard_pronunciation']['pathmp3']
         })
     }
@@ -32,7 +32,7 @@ async function loadPhrases(url) {
     const phrases = (await loadJsonResponse(url))['dataPhrases'][0]['items']
     for (let phrase of phrases) {
         recordings.push({
-            word: phrase['original'],
+            title: phrase['original'],
             url: phrase['standard_pronunciation']['pathmp3']
         })
     }
@@ -44,7 +44,7 @@ async function loadWordAlternatives(url) {
     const alternatives = (await loadJsonResponse(url))['data'][0]['items']
     for (let alt of alternatives) {
         recordings.push({
-            word: alt['original'],
+            title: alt['original'],
             url: alt['pathmp3']
         })
     }
@@ -65,8 +65,5 @@ export async function retrieveRecordings(word) {
             recordings = recordings.concat(value)
         }).catch((reason) => {})
     ])
-    recordings.sort((a, b) => {
-        return a.word.length - b.word.length
-    })
     return (recordings)
 }
