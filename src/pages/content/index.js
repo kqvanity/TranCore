@@ -123,7 +123,7 @@ async function appendingRecordings(word) {
 		}
 	`
 
-    recordings = search(word, await retrieveRecordings(word), {
+    recordings = search(word, await retrieveRecordings(word, 'de', 'en'), {
         returnMatchData: true,
         keySelector: (obj) => obj.title,
         threshold: 0.0
@@ -142,8 +142,6 @@ async function appendingRecordings(word) {
         recordingListItem.appendChild(buttonRespectiveText)
         recordingsDiv.appendChild(recordingListItem)
     }
-    // for (let i = 0; i < Object.keys(recordings).length; i++) {
-    // }
     return (popover)
 }
 
