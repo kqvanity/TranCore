@@ -2,9 +2,9 @@ import './tippy'
 import {parseGoogleTranslateResponse} from "./translation/Translation";
 import {playAudio} from "./pronunciation/audio";
 import {retrieveRecordings} from "./pronunciation/forvo";
-import {sortRecordings} from "./pronunciation/utils";
 import {search} from "fast-fuzzy";
 import {autoUpdate, computePosition} from "@floating-ui/dom";
+import {appendStyleElement} from "./styling";
 
 let highlightedWord = ""
 
@@ -12,68 +12,11 @@ function createPopoverContainer() {
     let tooltip = document.createElement('div');
     tooltip.classList.add("tooltip")
     document.body.appendChild(tooltip);
-    Object.assign(tooltip.style, {
-        background: "#222",
-        width: "250px",
-        height: "150px",
-        color: "white",
-        fontWeight: "bold",
-        padding: "5px",
-        borderRadius: "4px",
-        fontSize: "90%",
-        position: "absolute",
-        visibility: "visible",
-        zIndex: "9999999999999999999999999999999999999999999999",
-    })
 }
 
 async function appendingRecordings(word) {
     let recordingsDiv = document.createElement('div')
     recordingsDiv.className = 'recordings-div'
-
-    // Mainly to hide the scrollbar on chrome & opera & safari
-    let popoverStyleElement = document.getElementById('popover-style')
-    if (!popoverStyleElement) {
-        popoverStyleElement = document.createElement('style')
-        popoverStyleElement.id = 'popover-style'
-        document.body.appendChild(popoverStyleElement)
-    }
-    // FIXME: The current popover box doesn't work in certain websites/situations.
-    // FIXME: The z-index of the popover should only exceed the srcElement, to avoid floating other elements i.e., when the user scroll, it can get hidden below other elements
-    popoverStyleElement.innerHTML = `
-		div.recordings-div {
-			display: flex;
-			text-align: left;
-			flex-direction: column;
-			align-items: flex-start;
-			word-wrap: break-word;
-			position: absolute;
-			width: 100%;
-			height: 100%;
-			overflow: scroll;
-		}
-		div.recordings-div::-webkit-scrollbar { display: none }
-		div.recording-list-item {
-			display: flex;
-		}
-		button.recording-button {
-			background-color: gray;
-			color: white;
-			font-family: sans-serif;
-			font-size:small;
-			font-weight:lighter;
-			border-radius: 5px;
-			order-color: lightblue;
-			margin-bottom: 2px;
-			padding:2px;
-		}
-		p.recording-name {
-			color: black;
-			font-size: small;
-			font-family: sans-serif;
-			display: float-left;
-		}
-	`
 
     let recordings = search(word, await retrieveRecordings(word, 'de', 'en'), {
         returnMatchData: true,
@@ -119,18 +62,8 @@ async function appendTranslation(highlightedValue) {
     return (translateElement)
 }
 
-/* BUG
- * - [x] Selecting multiple words i.e. phrases, does get a word of the phrase as the chosen one, then it exhibit an astray popover.
- *      - [ ] This bug only occurs when the user double clicks within a paragraph i.e. a word is selected, then the whole paragraph is selected. The initially selected words get an astray popover, while the whole text is now highlighted.
- *      	- It was actually because of something else. It was because of the 'await remote page' delaying the 'highlighted word's respective coordinates styling'. The solution was to move the 'await statement' after the 'popover styling' especially setting its coordinates.
- * - The popover box apparently derives its coloring / theming / studying from the respective word/element's parent
- * - Resizing the window i.e. resizing the whole window, opening dev tools, gets the popover astray
- * - hyphenated words don't get detected e.e., ever-growing
- * - Clicking inside the popover, but outside the click button, would close the popover
- * - CSS Inheritance does take effect sometimes, when you don't explicitly set the CSS property to the popover yourself.
- */
-
 createPopoverContainer()
+appendStyleElement()
 function onHighlight(event) {
     const virtualEl = {
         getBoundingClientRect: () => {
@@ -155,8 +88,6 @@ function onHighlight(event) {
     const tooltip = document.querySelector(".tooltip");
     computePosition(virtualEl, tooltip).then(({x, y}) => {
         const selectedWord = document.getSelection().toString().toLowerCase().trim()
-        console.log(selectedWord.length)
-        console.log(x, y)
         if (highlightedWord !== selectedWord) {
             global.setTimeout(async () => {
                 tooltip.appendChild(await appendTranslation(selectedWord))
