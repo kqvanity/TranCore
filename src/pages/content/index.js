@@ -9,9 +9,22 @@ import {autoUpdate, computePosition} from "@floating-ui/dom";
 let highlightedWord = ""
 
 function createPopoverContainer() {
-    let popover = document.createElement('div');
-    popover.classList.add("tooltip")
-    document.body.appendChild(popover);
+    let tooltip = document.createElement('div');
+    tooltip.classList.add("tooltip")
+    document.body.appendChild(tooltip);
+    Object.assign(tooltip.style, {
+        background: "#222",
+        width: "250px",
+        height: "150px",
+        color: "white",
+        fontWeight: "bold",
+        padding: "5px",
+        borderRadius: "4px",
+        fontSize: "90%",
+        position: "absolute",
+        visibility: "visible",
+        zIndex: "9999999999999999999999999999999999999999999999",
+    })
 }
 
 async function appendingRecordings(word) {
@@ -122,7 +135,6 @@ function onHighlight(event) {
     const virtualEl = {
         getBoundingClientRect: () => {
             const hlBoundingClientRect = document.getSelection().getRangeAt(0).getBoundingClientRect()
-            // console.log(event.clientX, event.clientY, "What")
             if (hlBoundingClientRect.x <= 0 || hlBoundingClientRect.y <= 0) {
                 return {
                     width: 0,
@@ -141,32 +153,20 @@ function onHighlight(event) {
         getClientRects: () => document.getSelection().getRangeAt(0).getClientRects()
     };
     const tooltip = document.querySelector(".tooltip");
-    tooltip.style = `
-        background: #222;
-        width: 250px;
-        height: 150px;
-        color: white;
-        font-weight: bold;
-        padding: 5px;
-        border-radius: 4px;
-        font-size: 90%;
-        position: absolute;
-        z-index: 9999999999999999999999999999999999999999999999;
-    `;
     computePosition(virtualEl, tooltip).then(({x, y}) => {
         const selectedWord = document.getSelection().toString().toLowerCase().trim()
         console.log(selectedWord.length)
         console.log(x, y)
-        Object.assign(tooltip.style, {
-            left: `${x}px`,
-            top: `${y}px`,
-            visibility: (selectedWord.length === 0) ? 'hidden' : 'visible',
-        });
         if (highlightedWord !== selectedWord) {
             global.setTimeout(async () => {
                 tooltip.appendChild(await appendTranslation(selectedWord))
                 tooltip.appendChild(await appendingRecordings(selectedWord))
             }, 0)
+            Object.assign(tooltip.style, {
+                left: `${x}px`,
+                top: `${y}px`,
+                visibility: (selectedWord.length === 0) ? 'hidden' : 'visible',
+            });
         }
         if (selectedWord.length === 0 || highlightedWord !== selectedWord) {
             tooltip.innerHTML = ""
