@@ -1,12 +1,14 @@
 import './tippy'
-import {parseGoogleTranslateResponse} from "./translation/Translation";
-import {playAudio} from "./pronunciation/audio";
-import {retrieveRecordings} from "./pronunciation/forvo";
-import {search} from "fast-fuzzy";
-import {autoUpdate, computePosition} from "@floating-ui/dom";
-import {appendStyleElement} from "./styling";
+import { parseGoogleTranslateResponse } from "./translation/Translation";
+import { playAudio } from "./pronunciation/audio";
+import { retrieveRecordings } from "./pronunciation/forvo";
+import { search } from "fast-fuzzy";
+import { autoUpdate, computePosition } from "@floating-ui/dom";
+import { appendStyleElement } from "./styling";
+import { readConfiguration } from "./configurations";
 
 let highlightedWord = ""
+let userConfiguration = await readConfiguration()
 
 function createPopoverContainer() {
     let tooltip = document.createElement('div');
@@ -18,7 +20,9 @@ async function appendingRecordings(word) {
     let recordingsDiv = document.createElement('div')
     recordingsDiv.className = 'recordings-div'
 
-    let recordings = search(word, await retrieveRecordings(word, 'de', 'en'), {
+    console.log(userConfiguration)
+    const langaugeCode = userConfiguration["fromLanguage"];
+    let recordings = search(word, await retrieveRecordings(word, langaugeCode, 'en'), {
         returnMatchData: true,
         keySelector: (obj) => obj.title,
         threshold: 0.0

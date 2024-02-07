@@ -1,16 +1,18 @@
 const path = require('path')
 const ChromeExtensionReloader = require('webpack-run-chrome-extension')
 const copyPlugin = require("copy-webpack-plugin")
+const HtmlWebpackPlugin = require('html-webpack-plugin')
 
 const paths = {
     build: path.resolve(__dirname, 'build'),
     src: path.resolve(__dirname, 'src')
 }
 
-module.exports = {
+const options = {
     entry: {
-        content: path.join(__dirname, 'src','pages', 'content', 'index.js'),
-        background: path.join(__dirname, 'src', 'pages', 'background', 'index.js')
+        content: path.join(__dirname, 'src', 'pages', 'content', 'index.js'),
+        background: path.join(__dirname, 'src', 'pages', 'background', 'index.js'),
+        popup: path.join(__dirname, 'popup.ts')
     },
     mode: 'development',
     // target: "web",
@@ -45,6 +47,12 @@ module.exports = {
             // extensionPath: paths.src,
             extensionPath: path.join(__dirname, 'build'),
             autoReload: true
+        }),
+        new HtmlWebpackPlugin({
+            template: path.join(__dirname, 'index.html'),
+            filename: "index.html",
+            cache: false,
+            scriptLoading: "blocking"
         })
     ],
     resolve: {
@@ -53,3 +61,5 @@ module.exports = {
         symlinks: false
     }
 }
+
+module.exports = options

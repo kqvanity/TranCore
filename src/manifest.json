@@ -24,7 +24,8 @@
     "permissions": [
         "tabs",
         "activeTab",
-        "scripting"
+        "scripting",
+        "storage"
     ],
     "host_permissions": [
     	"http://forvo.com/",
@@ -33,7 +34,7 @@
     	"https://translate.google.de/"
     ],
     "action": {
-        "default_popup": "index.html",
+        "default_popup": "../index.html",
         "default_title": "TranCore"
     }
 }
