@@ -1,11 +1,86 @@
 import './tippy'
 import { parseGoogleTranslateResponse } from "./translation/Translation";
 import { playAudio } from "./pronunciation/audio";
-import { retrieveRecordings } from "./pronunciation/forvo";
+import { Pronunciation, retrieveRecordings } from "./pronunciation/forvo.ts";
 import { search } from "fast-fuzzy";
 import { autoUpdate, computePosition } from "@floating-ui/dom";
 import { appendStyleElement } from "./styling";
 import { readConfiguration } from "./configurations";
+import React, { useEffect, useState } from "react";
+import ReactDOM from "react-dom";
+
+// const List = ({ items }) => {
+//     return (
+//         <ul>
+//             {items.map((item, index) => (
+//                 <li key={index}>{item}</li>
+//             ))}
+//         </ul>
+//     );
+// };
+// 
+// class Pronunciation {
+//     name: string;
+//     url: string;
+//     constructor(name: string, url: string) {
+//         this.name = name
+//         this.url = url
+//     }
+// }
+// 
+// const PopupBox = ({ word, pronunciations, onClose }) => {
+//     const handleClickOutside = (event) => {
+//         if (event.target.className !== 'popup-box') {
+//             onClose();
+//         }
+//     };
+// 
+//     useEffect(() => {
+//         document.addEventListener('click', handleClickOutside);
+//         return () => document.removeEventListener('click', handleClickOutside);
+//     }, []);
+// 
+//     return (
+//         <div className="popup-box">
+//             <header>
+//                 <h1>{word} Translation</h1>
+//             </header>
+//             <ul>
+//                 {pronunciations.map((pronunciation, index) => (
+//                     <li key={index}>{pronunciation.name}</li>
+//                 ))}
+//             </ul>
+//             <button onClick={onClose}>Close</button>
+//         </div>
+//     );
+// };
+// 
+// function App() {
+//     const [isPopupOpen, setIsPopupOpen] = useState(false);
+//     const word = 'Bonjour';
+//     const pronunciations = [new Pronunciation('bohn-joor', 'https://domain1.com'), new Pronunciation("Sam", "https://domain2.com")];
+// 
+//     const handleOpenPopup = () => {
+//         setIsPopupOpen(true);
+//     };
+// 
+//     const handleClosePopup = () => {
+//         setIsPopupOpen(false);
+//     };
+// 
+//     return (
+//         <div>
+//             <button onClick={handleOpenPopup}>Show Pronunciations</button>
+//             {isPopupOpen && (
+//                 <PopupBox
+//                     word={word}
+//                     pronunciations={pronunciations}
+//                     onClose={handleClosePopup}
+//                 />
+//             )}
+//         </div>
+//     );
+// }
 
 let highlightedWord = ""
 let userConfiguration = await readConfiguration()
@@ -16,17 +91,19 @@ function createPopoverContainer() {
     document.body.appendChild(tooltip);
 }
 
-async function appendingRecordings(word) {
+async function appendingRecordings(word: string) {
     let recordingsDiv = document.createElement('div')
-    recordingsDiv.className = 'recordings-div'
+    recordingsDiv.className = "recordings-div"
 
     console.log(userConfiguration)
     const langaugeCode = userConfiguration["fromLanguage"];
-    let recordings = search(word, await retrieveRecordings(word, langaugeCode, 'en'), {
-        returnMatchData: true,
-        keySelector: (obj) => obj.title,
-        threshold: 0.0
-    }).map((object) => object.item)
+    console.log("...")
+    let recordings = await retrieveRecordings(word, langaugeCode, 'en')
+    // let recordings = search(word, await retrieveRecordings(word, langaugeCode, 'en'), {
+    //     returnMatchData: true,
+    //     keySelector: (obj) => obj.title,
+    //     threshold: 0.0
+    // }).map((object) => object.item)
     for (let recording of recordings) {
         let buttonRespectiveText = document.createElement('p')
         let buttonElement = document.createElement('button')
@@ -93,9 +170,10 @@ function onHighlight(event) {
     computePosition(virtualEl, tooltip).then(({x, y}) => {
         const selectedWord = document.getSelection().toString().toLowerCase().trim()
         if (highlightedWord !== selectedWord) {
-            global.setTimeout(async () => {
+            setTimeout(async () => {
                 tooltip.appendChild(await appendTranslation(selectedWord))
                 tooltip.appendChild(await appendingRecordings(selectedWord))
+                // ReactDOM.render(<App />, document.querySelector(".tooltip"))
             }, 0)
             Object.assign(tooltip.style, {
                 left: `${x}px`,
