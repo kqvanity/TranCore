@@ -20,7 +20,8 @@ export const appendStyleElement = (): void => {
             position: absolute;
             visibility: hidden;
             z-index: 9999999999999999999999999999999999999999999999;
-            overflow: scroll
+            overflow: scroll;
+            opacity: 1
         }
 		div.recordings-div {
 			display: flex;
