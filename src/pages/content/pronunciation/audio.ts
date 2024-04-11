@@ -10,10 +10,10 @@ import {fetchData} from "../fetch";
 *         - I guess The way to go about this would *
 *               -Pause any video in the current tab, whereas pause any other running audio in any other tab (exception for the current one.)
 */
-export async function playAudio(audioUrl) {
+export async function playAudio(audioUrl: string) {
     let audio;
     let audioContext = new AudioContext();
-    await fetchData(audioUrl, 'audio')
+    await fetchData({remoteSiteUrl: audioUrl, msg: 'audio'})
         .then(data => new Uint8Array(JSON.parse(data)).buffer)
         .then(arrayBuffer => audioContext.decodeAudioData(arrayBuffer))
         .then(decodedAudio => {
