@@ -9,19 +9,27 @@ export const appendStyleElement = (): void => {
     // FIXME: The z-index of the popover should only exceed the srcElement, to avoid floating other elements i.e., when the user scroll, it can get hidden below other elements
     popoverStyleElement.innerHTML = `
         div.tooltip {
-            background: #222;
+            background: white;
             width: 250px;
             height: 150px;
-            color: white;
+            color: black;
             font-weight: bold;
             padding: 5px;
             border-radius: 4px;
             font-size: 90%;
             position: absolute;
-            visibility: hidden;
             z-index: 9999999999999999999999999999999999999999999999;
             overflow: scroll;
-            opacity: 1
+            opacity: 1;
+            font-family: arial, sans-serif; border-radius: 12px; border: 1px solid rgb(162, 169, 177); box-shadow: rgba(0, 0, 0, 0.5) 0px 0px 17px;
+        }
+        #arrowElement {
+              position: absolute;
+              width: 20px;
+              height: 20px;
+              z-index: -1;
+              pointer-events: none;
+              transform: rotate(45deg),
         }
 		div.recordings-div {
 			display: flex;
@@ -29,7 +37,6 @@ export const appendStyleElement = (): void => {
 			flex-direction: column;
 			align-items: flex-start;
 			word-wrap: break-word;
-			position: absolute;
 		}
 		div.tooltip::-webkit-scrollbar { display: none }
 		div.recording-list-item {
@@ -37,7 +44,7 @@ export const appendStyleElement = (): void => {
 		}
 		button.recording-button {
 			background-color: gray;
-			color: white;
+			color: black;
 			font-family: sans-serif;
 			font-size:small;
 			font-weight:lighter;
@@ -47,7 +54,7 @@ export const appendStyleElement = (): void => {
 			padding:2px;
 		}
 		p.recording-name {
-			color: white;
+			color: black;
 			font-size: small;
 			font-family: sans-serif;
 			display: float-left;

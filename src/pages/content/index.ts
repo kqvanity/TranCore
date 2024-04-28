@@ -2,8 +2,8 @@ import './tippy'
 import { parseGoogleTranslateResponse } from "./translation/Translation";
 import { playAudio } from "./pronunciation/audio";
 import { Pronunciation, retrieveRecordings } from "./pronunciation/forvo.ts";
-import { search } from "fast-fuzzy";
-import { autoUpdate, computePosition } from "@floating-ui/dom";
+import Fuse from 'fuse.js';
+import { arrow, autoUpdate, computePosition, flip, offset, shift } from "@floating-ui/dom";
 import { appendStyleElement } from "./styling";
 import { readConfiguration } from "./configurations";
 import React, { useEffect, useState } from "react";
@@ -82,29 +82,32 @@ import ReactDOM from "react-dom";
 //     );
 // }
 
-let highlightedWord = ""
 let userConfiguration = await readConfiguration()
 
 function createPopoverContainer() {
-    let tooltip = document.createElement('div');
+    const tooltip = document.createElement('div');
     tooltip.classList.add("tooltip")
+    // Arrow element
+    const arrowElement = document.createElement('div')
+    arrowElement.id = "arrowElement"
+    //document.body.appendChild(arrowElement)
+    tooltip.appendChild(arrowElement)
     document.body.appendChild(tooltip);
 }
 
 async function appendingRecordings(word: string) {
     let recordingsDiv = document.createElement('div')
     recordingsDiv.className = "recordings-div"
-
-    console.log(userConfiguration)
     const langaugeCode = userConfiguration["fromLanguage"];
-    console.log("...")
     let recordings = await retrieveRecordings(word, langaugeCode, 'en')
-    // let recordings = search(word, await retrieveRecordings(word, langaugeCode, 'en'), {
-    //     returnMatchData: true,
-    //     keySelector: (obj) => obj.title,
-    //     threshold: 0.0
-    // }).map((object) => object.item)
-    for (let recording of recordings) {
+    const fuse = new Fuse(recordings ?? [], {
+        keys: [
+            "title"
+        ],
+        threshold: 1.0
+    })
+    recordings = fuse.search(word).map((result) => result.item)
+    for (const recording of recordings) {
         let buttonRespectiveText = document.createElement('p')
         let buttonElement = document.createElement('button')
         let recordingListItem = document.createElement('div')
@@ -128,14 +131,14 @@ audioRecordingsButtons.forEach((button) => {
         playAudio(recordingsObject[buttonTextContent][0])
     })
 })
-document.addEventListener('click', (event) => {
+document.addEventListener('click', (event: MouseEvent) => {
     let eventTarget = event.target
     if (eventTarget.className == 'recording-button') {
         playAudio(eventTarget.getAttribute('href'))
     }
 })
 
-async function appendTranslation(highlightedValue) {
+async function appendTranslation(highlightedValue: string) {
     const translateElement = document.createElement('div')
     translateElement.classList.add('recording-list-item')
     translateElement.classList.add('translation')
@@ -143,33 +146,68 @@ async function appendTranslation(highlightedValue) {
     return (translateElement)
 }
 
-createPopoverContainer()
+//document.addEventListener('click', (mouseEvent: MouseEvent) => {
+    //const element = mouseEvent.target
+    //if (!element?.classList?.contains("tooltip")) {
+        //document.querySelectorAll(".tooltip").forEach(nodeElement => {
+            //nodeElement.remove();
+        //});
+    //}
+    ////if (document.getElementsByClassName('tooltip')?.[0]?.contains(element))
+//})
+
 appendStyleElement()
-function onHighlight(event) {
+
+/**
+ *   Remove the tooltip if the user clicked anywhere outside of it
+ */
+document.onmouseup =  (moustEvent: MouseEvent) => {
+    const state = document.getElementsByClassName('tooltip')?.[0]?.contains(moustEvent.target)
+    if (!state) document.querySelector('.tooltip')?.remove()
+}
+
+document.addEventListener('mouseup', (mouseEvent: MouseEvent) => {
+    if (mouseEvent.altKey && mouseEvent.which == 1) {
     const virtualEl = {
         getBoundingClientRect: () => {
-            const hlBoundingClientRect = document.getSelection().getRangeAt(0).getBoundingClientRect()
+            const hlBoundingClientRect = document.getSelection()?.getRangeAt(0).getBoundingClientRect()
             if (hlBoundingClientRect.x <= 0 || hlBoundingClientRect.y <= 0) {
                 return {
                     width: 0,
                     height: 0,
-                    x: event.clientX,
-                    y: event.clientY,
-                    top: event.clientY,
-                    left: event.clientX,
-                    right: event.clientX,
-                    bottom: event.clientY,
+                    x: mouseEvent.clientX,
+                    y: mouseEvent.clientY,
+                    top: mouseEvent.clientY,
+                    left: mouseEvent.clientX,
+                    right: mouseEvent.clientX,
+                    bottom: mouseEvent.clientY,
                 };
             } else {
                 return hlBoundingClientRect
             }
         },
-        getClientRects: () => document.getSelection().getRangeAt(0).getClientRects()
+        getClientRects: () => document.getSelection()?.getRangeAt(0).getClientRects()
     };
+    createPopoverContainer()
     const tooltip = document.querySelector(".tooltip");
-    computePosition(virtualEl, tooltip).then(({x, y}) => {
-        const selectedWord = document.getSelection().toString().toLowerCase().trim()
-        if (highlightedWord !== selectedWord) {
+    //TODO: Figure out the computePosition function
+    const arrowElement: HTMLElement | null = document.getElementById("arrowElement")
+    const arrowLen = arrowElement?.offsetWidth;
+    // Get half the arrow box's hypotenuse length
+    const floatingOffset = Math.sqrt(2 * arrowLen ** 2) / 2;
+    computePosition(virtualEl, document.querySelector('.tooltip'), {
+        placement: "bottom",
+        middleware: [
+            offset(floatingOffset),
+            flip(),
+            shift({ padding: 5 }),
+            arrow({ element: arrowElement })
+        ]
+    }).then(({x, y, middlewareData, placement}) => {
+        const selectedWord: string = document.getSelection().toString().toLowerCase().trim()
+        // const state = document.getElementsByClassName('tooltip')?.[0]?.contains(k)
+        const { width, height } = virtualEl.getBoundingClientRect();
+        if (true) {
             setTimeout(async () => {
                 tooltip.appendChild(await appendTranslation(selectedWord))
                 tooltip.appendChild(await appendingRecordings(selectedWord))
@@ -178,14 +216,38 @@ function onHighlight(event) {
             Object.assign(tooltip.style, {
                 left: `${x}px`,
                 top: `${y}px`,
-                visibility: (selectedWord.length === 0) ? 'hidden' : 'visible',
+                // visibility: (selectedWord.length === 0) ? 'hidden' : 'visible',
             });
-        }
-        if (selectedWord.length === 0 || highlightedWord !== selectedWord) {
-            tooltip.innerHTML = ""
-            highlightedWord = selectedWord
+            if (selectedWord.length === 0) {
+                tooltip.innerHTML = ""
+                // Arrow element
+                const arrowElement = document.createElement('div')
+                arrowElement.id = "arrowElement"
+                tooltip.appendChild(arrowElement)
+            }
+            const side = placement.split("-")[0];
+            const staticSide = {
+              top: "bottom",
+              right: "left",
+              bottom: "top",
+              left: "right"
+            }[side];
+            if (middlewareData.arrow) {
+                const {x , y} = middlewareData.arrow;
+                console.log(x, y)
+                console.log(arrowElement)
+                console.log(x == null)
+                Object.assign(arrowElement.style, {
+                  left: x != null ? `${x}px` : "",
+                    top: y != null ? `${y}px` : "",
+                    right: "",
+                    bottom: "",
+                    [staticSide]: `${-arrowLen / 2}px`,
+                    transform: "rotate(45deg)",
+                    background: "red",
+                });
+            } else { console.log('WTH') }
         }
     });
-}
+}});
 
-document.addEventListener('mouseup', onHighlight);

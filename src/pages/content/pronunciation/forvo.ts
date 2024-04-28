@@ -11,7 +11,6 @@ function generateBaseUrls(word: string, srcLanguage: string, targetLanguage: str
 
 const loadJsonResponse = async (url: string) => {
     const jsonResponse = await fetchData({ remoteSiteUrl: url, msg: 'json' })
-    console.log('jsonResponse')
     return (await JSON.parse(String(jsonResponse)))
 }
 
@@ -34,7 +33,6 @@ async function loadSingleWords(url: string) {
             ))
         }
     }
-    console.log(recordings)
     return (recordings)
 }
 
@@ -80,5 +78,5 @@ export async function retrieveRecordings(word: string, srcLanguage = 'auto', tar
             recordings = recordings.concat(value)
         }).catch((reason) => {})
     ])
-    return (recordings)
+    return (recordings.sort((a, b) => a.title.length - b.title.length))
 }

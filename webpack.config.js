@@ -1,23 +1,56 @@
-const path = require('path')
-const ChromeExtensionReloader = require('webpack-run-chrome-extension')
-const copyPlugin = require("copy-webpack-plugin")
-const HtmlWebpackPlugin = require('html-webpack-plugin')
+const webpack = require("webpack"),
+    path = require("path"),
+    fileSystem = require("fs"),
+    //TODO: should fiddle with it later on
+    //env = require("./utils/env"),
+    ChromeExtensionReloader = require('webpack-run-chrome-extension'),
+    CopyWebpackPlugin = require("copy-webpack-plugin"),
+    HtmlWebpackPlugin = require("html-webpack-plugin"),
+    CleanWebpackPlugin = require("clean-webpack-plugin").CleanWebpackPlugin,
+    WriteFilePlugin = require("write-file-webpack-plugin")
+    WebpackExtensionManifestPlugin = require("webpack-extension-manifest-plugin");
+
 
 const paths = {
-    build: path.resolve(__dirname, 'build'),
-    src: path.resolve(__dirname, 'src')
+    src: path.resolve(__dirname, 'src'),
+    build: path.resolve(__dirname, 'build')
 }
 
 // TODO: It should be refactored to make use of environment variables or so. [chrome-extension-boilerplate] for reference
 const isDevelopment = true
 
 const options = {
+    mode: 'development',
     entry: {
         content: path.join(__dirname, 'src', 'pages', 'content', 'index.ts'),
         background: path.join(__dirname, 'src', 'pages', 'background', 'index.ts'),
         popup: path.join(__dirname, 'popup.ts')
     },
-    mode: 'development',
+    output: {
+        filename: '[name].bundle.js',
+        path: path.resolve(__dirname, 'build'),
+        clean: true,
+    },
+    resolve: {
+        //extensions: ['.ts', '.tsx'],
+        extensions: ['ts', 'tsx', 'json', 'css', 'sass', 'scss', 'html', 'css'].map((extension) => "." + extension),
+        modules: ['node_modules'],
+        //symlinks: false
+    },
+    devServer: {
+        devtool: 'inline-source-map',
+        static: 'build',
+    },
+     //devServer: {
+         //hot: true,
+         //port: '8180',
+         //contentBase: path.join(__dirname, 'build'),
+        //static: {
+          //directory: path.join(__dirname, 'src'),
+          //publicPath: 'build',
+            //watch: true,
+        //},
+      //},
     // target: "web",
     module: {
       rules: [
@@ -37,13 +70,17 @@ const options = {
     },
     watch: true,
     plugins: [
-        new copyPlugin({
+        new CleanWebpackPlugin({
+            verbose: true,
+            cleanStaleWebpackAssets: false
+        }),
+        new CopyWebpackPlugin({
             patterns: [
-                {
-                    from: "src/manifest.json",
-                    to: path.join(__dirname, 'build')
-                }
-            ]
+                { from: "src", to: path.join(__dirname, 'build') }
+            ],
+            options: {
+                concurrency: 3
+            }
         }),
         new ChromeExtensionReloader({
             // extensionPath: paths.src,
@@ -55,19 +92,9 @@ const options = {
             filename: "index.html",
             cache: false,
             scriptLoading: "blocking"
-        })
+        }),
+        new WriteFilePlugin(),
     ],
-    resolve: {
-        extensions: ['.ts', '.tsx'],
-        modules: ['node_modules', path.resolve(__dirname, 'core')],
-        symlinks: false
-    },
-    output: {
-        filename: '[name].bundle.js',
-        path: path.resolve(__dirname, 'build'),
-        clean: true,
-        publicPath: '/'
-    },
 }
 
 module.exports = options
