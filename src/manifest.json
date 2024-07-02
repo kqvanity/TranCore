@@ -39,5 +39,10 @@
     "action": {
         "default_popup": "../index.html",
         "default_title": "TranCore"
+    },
+    "browser_specific_settings": {
+      "gecko": {
+        "id": "{9F5FAbc3-CD27-8Ae4-FE7c-DBF63F5dDcd2}"
+      }
     }
 }
