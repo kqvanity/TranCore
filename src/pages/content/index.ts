@@ -99,7 +99,7 @@ async function appendingRecordings(word: string) {
     let recordingsDiv = document.createElement('div')
     recordingsDiv.className = "recordings-div"
     const langaugeCode = userConfiguration["fromLanguage"];
-    let recordings = await retrieveRecordings(word, langaugeCode, 'en')
+    let recordings = await retrieveRecordings(word, langaugeCode)
     const fuse = new Fuse(recordings ?? [], {
         keys: [
             "title"

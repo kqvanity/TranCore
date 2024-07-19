@@ -3,7 +3,6 @@ const webpack = require("webpack"),
     fileSystem = require("fs"),
     //TODO: should fiddle with it later on
     //env = require("./utils/env"),
-    ChromeExtensionReloader = require('webpack-run-chrome-extension'),
     CopyWebpackPlugin = require("copy-webpack-plugin"),
     HtmlWebpackPlugin = require("html-webpack-plugin"),
     CleanWebpackPlugin = require("clean-webpack-plugin").CleanWebpackPlugin,
@@ -81,11 +80,6 @@ const options = {
             options: {
                 concurrency: 3
             }
-        }),
-        new ChromeExtensionReloader({
-            // extensionPath: paths.src,
-            extensionPath: path.join(__dirname, 'build'),
-            autoReload: true
         }),
         new HtmlWebpackPlugin({
             template: path.join(__dirname, 'index.html'),

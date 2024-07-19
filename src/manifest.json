@@ -31,9 +31,7 @@
         "storage"
     ],
     "host_permissions": [
-    	"http://forvo.com/",
-    	"https://forvo.com/",
-    	"https://*.forvo.com/",
+        "http://localhost:9999/pronunciations/*",
     	"https://translate.google.de/"
     ],
     "action": {
