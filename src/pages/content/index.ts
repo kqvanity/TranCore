@@ -166,8 +166,26 @@ document.onmouseup =  (moustEvent: MouseEvent) => {
     if (!state) document.querySelector('.tooltip')?.remove()
 }
 
+/**
+ *
+ */
+const triggerKeyed = function (mouseEvent: MouseEvent): boolean {
+    const key: string = userConfiguration["key"]
+    if (key == "none") {
+        return true
+    } else if (mouseEvent.altKey && key == "alt") {
+        return true
+    } else if (mouseEvent.ctrlKey && key == "ctrl") {
+        return true
+    } else if (mouseEvent.shiftKey && key == "shift") {
+        return true
+    } else {
+        return false
+    }
+}
+
 document.addEventListener('mouseup', (mouseEvent: MouseEvent) => {
-    if (mouseEvent.altKey && mouseEvent.which == 1) {
+    if (triggerKeyed(mouseEvent) && mouseEvent.which == 1) {
     const virtualEl = {
         getBoundingClientRect: () => {
             const hlBoundingClientRect = document.getSelection()?.getRangeAt(0).getBoundingClientRect()
