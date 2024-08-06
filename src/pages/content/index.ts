@@ -184,8 +184,24 @@ const triggerKeyed = function (mouseEvent: MouseEvent): boolean {
     }
 }
 
+class Word {
+    title: string
+    constructor(title: string) {
+        this.title = title
+    }
+}
+
+const cWord: Word = new Word("")
+
 document.addEventListener('mouseup', (mouseEvent: MouseEvent) => {
-    if (triggerKeyed(mouseEvent) && mouseEvent.which == 1) {
+    const selection = document.getSelection()?.toString().toLowerCase().trim()
+    if (
+        (!triggerKeyed(mouseEvent) && mouseEvent.which != 1)
+        || selection.length == 0 || selection == cWord.title
+    ) {
+        console.log("Something")
+        return
+    }
     const virtualEl = {
         getBoundingClientRect: () => {
             const hlBoundingClientRect = document.getSelection()?.getRangeAt(0).getBoundingClientRect()
@@ -223,9 +239,17 @@ document.addEventListener('mouseup', (mouseEvent: MouseEvent) => {
         ]
     }).then(({x, y, middlewareData, placement}) => {
         const selectedWord: string = document.getSelection().toString().toLowerCase().trim()
+        cWord.title = selectedWord
         // const state = document.getElementsByClassName('tooltip')?.[0]?.contains(k)
         const { width, height } = virtualEl.getBoundingClientRect();
         if (true) {
+            // if (selectedWord.length === 0) {
+                tooltip.innerHTML = ""
+            //     // Arrow element
+            //     const arrowElement = document.createElement('div')
+            //     arrowElement.id = "arrowElement"
+            //     tooltip.appendChild(arrowElement)
+            // }
             setTimeout(async () => {
                 tooltip.appendChild(await appendTranslation(selectedWord))
                 tooltip.appendChild(await appendingRecordings(selectedWord))
@@ -236,13 +260,6 @@ document.addEventListener('mouseup', (mouseEvent: MouseEvent) => {
                 top: `${y}px`,
                 // visibility: (selectedWord.length === 0) ? 'hidden' : 'visible',
             });
-            if (selectedWord.length === 0) {
-                tooltip.innerHTML = ""
-                // Arrow element
-                const arrowElement = document.createElement('div')
-                arrowElement.id = "arrowElement"
-                tooltip.appendChild(arrowElement)
-            }
             const side = placement.split("-")[0];
             const staticSide = {
               top: "bottom",
@@ -267,5 +284,5 @@ document.addEventListener('mouseup', (mouseEvent: MouseEvent) => {
             } else { console.log('WTH') }
         }
     });
-}});
+});
 
