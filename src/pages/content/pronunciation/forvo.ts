@@ -27,7 +27,7 @@ async function loadSingleWords(url: string) {
 }
 
 export async function retrieveRecordings(word: string, langCode = 'en'){
-    const endPoint = `http://localhost:9999/pronunciations/${word}?code=${langCode}`
+    const endPoint = `http://kam:9999/pronunciations/${word}?code=${langCode}`
     const recordings: Pronunciation[] = await loadSingleWords(endPoint)
     return (recordings.sort((a, b) => a.title.length - b.title.length))
 }

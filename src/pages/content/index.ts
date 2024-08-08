@@ -199,7 +199,6 @@ document.addEventListener('mouseup', (mouseEvent: MouseEvent) => {
         (!triggerKeyed(mouseEvent) && mouseEvent.which != 1)
         || selection.length == 0 || selection == cWord.title
     ) {
-        console.log("Something")
         return
     }
     const virtualEl = {
