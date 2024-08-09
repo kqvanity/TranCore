@@ -4,3 +4,13 @@ export class Word {
         this.title = title
     }
 }
+
+export class Pronunciation {
+  title: string;
+  url: string;
+  constructor(title: string, url: string) {
+    this.title = title;
+    this.url = url;
+  }
+}
+

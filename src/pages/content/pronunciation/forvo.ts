@@ -1,17 +1,9 @@
 import { fetchData } from "../fetch";
+import { Pronunciation } from "../model";
 
 const loadJsonResponse = async (url: string) => {
     const jsonResponse = await fetchData({ remoteSiteUrl: url, msg: 'json' })
     return (await JSON.parse(String(jsonResponse)))
-}
-
-export class Pronunciation {
-    title: string
-    url: string
-    constructor(title: string, url: string) {
-        this.title = title
-        this.url = url
-    }
 }
 
 async function loadSingleWords(url: string) {

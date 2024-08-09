@@ -7,10 +7,11 @@ import { JssProvider } from 'react-jss'
 import { popupCardID } from './consts'
 import { create } from 'jss'
 import preset from 'jss-preset-default'
-import { BaseProvider, DarkTheme, LightTheme } from 'baseui'
 import { Word } from './model'
 import { Provider as StyletronProvider } from 'styletron-react'
 import { Client as Styletron } from 'styletron-engine-atomic'
+import { PronunciationList } from './Pronunciations'
+import { Translator } from './Translator'
 
 async function createPopupCard() {
     const $popupCard = document.createElement('div')
@@ -35,16 +36,6 @@ async function createPopupCard() {
     return $popupCard
 }
 
-
-type BaseThemeType = "light" | "dark"
-const useCurrentThemeType = (): BaseThemeType => {
-    return 'dark'
-}
-const useTheme = () => {
-    const themeType = useCurrentThemeType()
-    const theme = useMemo(() => (themeType === 'light'? LightTheme : DarkTheme), [themeType])
-    return { theme, themeType }
-}
 
 export async function showPopupCard(reference: ReferenceElement, word: Word, autoFocus: boolean | undefined = false) {
 
@@ -73,7 +64,10 @@ export async function showPopupCard(reference: ReferenceElement, word: Word, aut
                     <InnerContainer reference={reference}>
                         <StyletronProvider value={engine}>
                             <Translator 
-                                word={ word }
+                                term= {word.title}
+                            />
+                            <PronunciationList 
+                                term={word.title}
                             />
                         </StyletronProvider>
                     </InnerContainer>
@@ -84,22 +78,6 @@ export async function showPopupCard(reference: ReferenceElement, word: Word, aut
     // setExternalOriginalText(text)
 }
 
-
-function Translator({word}) {
-
-    const { theme } = useTheme()
-
-    return (
-        <BaseProvider theme={theme}>
-            <div>
-              <a color='red' href="https://forvo.com">
-                <h3>{word.title}</h3>
-                <p>"Just the {word.title} with extra"</p>
-              </a>
-            </div>
-        </BaseProvider>
-    )
-}
 
 function GlobalSuspense({ children }: { children: React.ReactNode }) {
     // TODO: a global loading fallback

@@ -9,6 +9,7 @@ import {
     popupCardMinHeight,
     popupCardMinHeightAfterTranslation,
     popupCardMinWidth,
+    popupCardMaxHeight,
     popupCardOffset,
     zIndex,
 } from './consts'
@@ -30,8 +31,11 @@ const useStyles = createUseStyles({
         fontSize: '13px',
         color: '#333',
         font: '14px/1.6 -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica Neue,Arial,sans-serif,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol,Noto Color Emoji',
+        maxHeight: `${popupCardMaxHeight}px`,
         minHeight: `${popupCardMinHeight}px`,
         width: 'max-content',
+        overflow: 'scroll',
+        background: 'floralwhite'
     },
 })
 

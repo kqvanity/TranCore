@@ -1,19 +1,15 @@
-import { parseGoogleTranslateResponse } from "./translation/Translation";
-import { playAudio } from "./pronunciation/audio";
-// import { Pronunciation, retrieveRecordings } from "./pronunciation/forvo.ts";
 import Fuse from 'fuse.js';
 import { readConfiguration } from "./configurations";
-import { Word } from './model';
+import { Pronunciation, Word } from './model';
 // import { triggerKeyed } from './utils';
 import { containerID, popupCardID, popupCardOffset, popupThumbID, zIndex } from './consts'
 import { attachEventsToContainer } from "./utils";
 import { showPopupCard } from "./floating";
+import { retrieveRecordings } from "./pronunciation/forvo";
 
 let userConfiguration = await readConfiguration()
 
-async function appendingRecordings(word: string) {
-    let recordingsDiv = document.createElement('div')
-    recordingsDiv.className = "recordings-div"
+export const loadPronunciations = async (word: string): Pronunciation[] => {
     const langaugeCode = userConfiguration["fromLanguage"];
     let recordings = await retrieveRecordings(word, langaugeCode)
     const fuse = new Fuse(recordings ?? [], {
@@ -23,43 +19,7 @@ async function appendingRecordings(word: string) {
         threshold: 1.0
     })
     recordings = fuse.search(word).map((result) => result.item)
-    for (const recording of recordings) {
-        let buttonRespectiveText = document.createElement('p')
-        let buttonElement = document.createElement('button')
-        let recordingListItem = document.createElement('div')
-        recordingListItem.className = 'recording-list-item'
-        buttonRespectiveText.textContent = recording.title
-        buttonElement.setAttribute('href', recording.url)
-        buttonRespectiveText.className = 'recording-name'
-        buttonElement.className = 'recording-button'
-        buttonElement.textContent = 'Play'            // Placholding content for now
-        recordingListItem.appendChild(buttonElement)
-        recordingListItem.appendChild(buttonRespectiveText)
-        recordingsDiv.appendChild(recordingListItem)
-    }
-    return (recordingsDiv)
-}
-
-let audioRecordingsButtons = Array.from(document.getElementsByClassName('recording-button'))
-audioRecordingsButtons.forEach((button) => {
-    button.addEventListener('click', function handleButtonClick(event) {
-        let buttonTextContent = event.target.textContent
-        playAudio(recordingsObject[buttonTextContent][0])
-    })
-})
-document.addEventListener('click', (event: MouseEvent) => {
-    let eventTarget = event.target
-    if (eventTarget.className == 'recording-button') {
-        playAudio(eventTarget.getAttribute('href'))
-    }
-})
-
-async function appendTranslation(highlightedValue: string) {
-    const translateElement = document.createElement('div')
-    translateElement.classList.add('recording-list-item')
-    translateElement.classList.add('translation')
-    translateElement.textContent = await parseGoogleTranslateResponse(highlightedValue)
-    return (translateElement)
+    return recordings
 }
 
 export async function getContainer(): Promise<HTMLElement> {
@@ -137,13 +97,6 @@ const mouseDownHandler = async (event: MouseEvent) => {
     // }
 }
 document.addEventListener('mousedown', mouseDownHandler)
-
-
-//             setTimeout(async () => {
-//                 tooltip.appendChild(await appendTranslation(selectedWord))
-//                 tooltip.appendChild(await appendingRecordings(selectedWord))
-//                 // ReactDOM.render(<App />, document.querySelector(".tooltip"))
-//             }, 0)
 
 export const getClientX = (event: MouseEvent) => {
     return event.clientX
