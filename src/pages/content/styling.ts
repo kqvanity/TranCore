@@ -7,29 +7,47 @@ export const appendStyleElement = (): void => {
     document.body.appendChild(popoverStyleElement)
     // FIXME: The current popover box doesn't work in certain websites/situations.
     // FIXME: The z-index of the popover should only exceed the srcElement, to avoid floating other elements i.e., when the user scroll, it can get hidden below other elements
+    // div.tooltip {
+    //     background: white;
+    //     width: 250px;
+    //     height: 150px;
+    //     color: black;
+    //     font-weight: bold;
+    //     padding: 5px;
+    //     border-radius: 4px;
+    //     font-size: 90%;
+    //     position: absolute;
+    //     z-index: 9999999999999999999999999999999999999999999999;
+    //     overflow: scroll;
+    //     opacity: 1;
+    //     font-family: arial, sans-serif; border-radius: 12px; border: 1px solid rgb(162, 169, 177); box-shadow: rgba(0, 0, 0, 0.5) 0px 0px 17px;
+    // }
     popoverStyleElement.innerHTML = `
-        div.tooltip {
-            background: white;
-            width: 250px;
-            height: 150px;
-            color: black;
-            font-weight: bold;
-            padding: 5px;
-            border-radius: 4px;
-            font-size: 90%;
+        div#tooltip {
+            left: 0;
+            top: 0;
             position: absolute;
-            z-index: 9999999999999999999999999999999999999999999999;
-            overflow: scroll;
+            display: inline-block;
+            z-index: var(--max-z-index);
+            padding-left: 8px;
+            padding-right: 8px;
+            padding-top: 5px;
+            padding-bottom: 5px;
+            font-size: var(--annotation-font-size);
+            line-height: 1.3;
+            background: rgb(241, 241, 241);
+            color: rgb(0, 0, 0);
+            border-radius: 6px;
+            transition: 0.1s ease-in;
             opacity: 1;
-            font-family: arial, sans-serif; border-radius: 12px; border: 1px solid rgb(162, 169, 177); box-shadow: rgba(0, 0, 0, 0.5) 0px 0px 17px;
-        }
-        #arrowElement {
-              position: absolute;
-              width: 20px;
-              height: 20px;
-              z-index: -1;
-              pointer-events: none;
-              transform: rotate(45deg),
+            visibility: visible;
+            overflow: scroll;
+            font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            font-style: normal;
+            font-weight: 500;
+            max-height: 150px;
+            max-width: 450px;
+            user-select: none;
         }
 		div.recordings-div {
 			display: flex;

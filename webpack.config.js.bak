@@ -30,7 +30,7 @@ var options = {
   entry: {
     background: path.join(__dirname, 'src', 'pages', 'background', 'index.ts'),
     popup: path.join(__dirname, 'popup.ts'),
-    content: path.join(__dirname, 'src', 'pages', 'content', 'index.ts'),
+    contentScript: path.join(__dirname, 'src', 'pages', 'content', 'index.ts'),
   },
   output: {
     filename: '[name].bundle.js',
@@ -145,4 +145,3 @@ var options = {
 };
 
 module.exports = options;
-

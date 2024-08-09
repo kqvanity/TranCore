@@ -1,99 +1,15 @@
-import './tippy'
 import { parseGoogleTranslateResponse } from "./translation/Translation";
 import { playAudio } from "./pronunciation/audio";
-import { Pronunciation, retrieveRecordings } from "./pronunciation/forvo.ts";
+// import { Pronunciation, retrieveRecordings } from "./pronunciation/forvo.ts";
 import Fuse from 'fuse.js';
-import { arrow, autoUpdate, computePosition, flip, offset, shift } from "@floating-ui/dom";
-import { appendStyleElement } from "./styling";
 import { readConfiguration } from "./configurations";
-import React, { useEffect, useState } from "react";
-import ReactDOM from "react-dom";
-
-// const List = ({ items }) => {
-//     return (
-//         <ul>
-//             {items.map((item, index) => (
-//                 <li key={index}>{item}</li>
-//             ))}
-//         </ul>
-//     );
-// };
-// 
-// class Pronunciation {
-//     name: string;
-//     url: string;
-//     constructor(name: string, url: string) {
-//         this.name = name
-//         this.url = url
-//     }
-// }
-// 
-// const PopupBox = ({ word, pronunciations, onClose }) => {
-//     const handleClickOutside = (event) => {
-//         if (event.target.className !== 'popup-box') {
-//             onClose();
-//         }
-//     };
-// 
-//     useEffect(() => {
-//         document.addEventListener('click', handleClickOutside);
-//         return () => document.removeEventListener('click', handleClickOutside);
-//     }, []);
-// 
-//     return (
-//         <div className="popup-box">
-//             <header>
-//                 <h1>{word} Translation</h1>
-//             </header>
-//             <ul>
-//                 {pronunciations.map((pronunciation, index) => (
-//                     <li key={index}>{pronunciation.name}</li>
-//                 ))}
-//             </ul>
-//             <button onClick={onClose}>Close</button>
-//         </div>
-//     );
-// };
-// 
-// function App() {
-//     const [isPopupOpen, setIsPopupOpen] = useState(false);
-//     const word = 'Bonjour';
-//     const pronunciations = [new Pronunciation('bohn-joor', 'https://domain1.com'), new Pronunciation("Sam", "https://domain2.com")];
-// 
-//     const handleOpenPopup = () => {
-//         setIsPopupOpen(true);
-//     };
-// 
-//     const handleClosePopup = () => {
-//         setIsPopupOpen(false);
-//     };
-// 
-//     return (
-//         <div>
-//             <button onClick={handleOpenPopup}>Show Pronunciations</button>
-//             {isPopupOpen && (
-//                 <PopupBox
-//                     word={word}
-//                     pronunciations={pronunciations}
-//                     onClose={handleClosePopup}
-//                 />
-//             )}
-//         </div>
-//     );
-// }
+import { Word } from './model';
+// import { triggerKeyed } from './utils';
+import { containerID, popupCardID, popupCardOffset, popupThumbID, zIndex } from './consts'
+import { attachEventsToContainer } from "./utils";
+import { showPopupCard } from "./floating";
 
 let userConfiguration = await readConfiguration()
-
-function createPopoverContainer() {
-    const tooltip = document.createElement('div');
-    tooltip.classList.add("tooltip")
-    // Arrow element
-    const arrowElement = document.createElement('div')
-    arrowElement.id = "arrowElement"
-    //document.body.appendChild(arrowElement)
-    tooltip.appendChild(arrowElement)
-    document.body.appendChild(tooltip);
-}
 
 async function appendingRecordings(word: string) {
     let recordingsDiv = document.createElement('div')
@@ -146,142 +62,140 @@ async function appendTranslation(highlightedValue: string) {
     return (translateElement)
 }
 
-//document.addEventListener('click', (mouseEvent: MouseEvent) => {
-    //const element = mouseEvent.target
-    //if (!element?.classList?.contains("tooltip")) {
-        //document.querySelectorAll(".tooltip").forEach(nodeElement => {
-            //nodeElement.remove();
-        //});
-    //}
-    ////if (document.getElementsByClassName('tooltip')?.[0]?.contains(element))
-//})
+export async function getContainer(): Promise<HTMLElement> {
+    // Create the parent container [Rectangular container] if it's ot already existent
+    let $container: HTMLElement | null = document.getElementById(containerID)
+    if (!$container) {
+        $container = document.createElement('div')
+        $container.id = containerID
 
-appendStyleElement()
+        // todo:
+        attachEventsToContainer($container)
+        $container.style.zIndex = zIndex
 
-/**
- *   Remove the tooltip if the user clicked anywhere outside of it
- */
-document.onmouseup =  (moustEvent: MouseEvent) => {
-    const state = document.getElementsByClassName('tooltip')?.[0]?.contains(moustEvent.target)
-    if (!state) document.querySelector('.tooltip')?.remove()
-}
-
-/**
- *
- */
-const triggerKeyed = function (mouseEvent: MouseEvent): boolean {
-    const key: string = userConfiguration["key"]
-    if (key == "none") {
-        return true
-    } else if (mouseEvent.altKey && key == "alt") {
-        return true
-    } else if (mouseEvent.ctrlKey && key == "ctrl") {
-        return true
-    } else if (mouseEvent.shiftKey && key == "shift") {
-        return true
-    } else {
-        return false
+        return new Promise((resolve, reject) => {
+            setTimeout(() => {
+                const $container_: HTMLElement | null = document.getElementById(containerID)
+                if ($container_) {
+                    resolve($container_)
+                    return
+                }
+                if (!$container) {
+                    reject(new Error('Failed to create container'))
+                    return
+                }
+                const shadowRoot = $container.attachShadow({ mode: 'open' })
+                const $inner = document.createElement('div')
+                shadowRoot.appendChild($inner)
+                const $html = document.body.parentElement
+                if ($html) {
+                    $html.appendChild($container as HTMLElement)
+                } else {
+                    document.appendChild($container as HTMLElement)
+                }
+                resolve($container)
+            }, 100)
+        })
     }
+    return new Promise((resolve) => {
+        resolve($container as HTMLElement)
+    })
 }
 
-class Word {
-    title: string
-    constructor(title: string) {
-        this.title = title
-    }
+
+export async function queryPopupCardElement(): Promise<HTMLElement | null> {
+    const $container = await getContainer()
+    return $container.shadowRoot?.querySelector(`#${popupCardID}`) as HTMLDivElement | null
 }
 
-const cWord: Word = new Word("")
+async function hidePopupCard() {
+    const $popupCard: HTMLElement | null = await queryPopupCardElement()
 
-document.addEventListener('mouseup', (mouseEvent: MouseEvent) => {
-    const selection = document.getSelection()?.toString().toLowerCase().trim()
-    if (
-        (!triggerKeyed(mouseEvent) && mouseEvent.which != 1)
-        || selection.length == 0 || selection == cWord.title
-    ) {
+    if (!$popupCard) {
         return
     }
-    const virtualEl = {
-        getBoundingClientRect: () => {
-            const hlBoundingClientRect = document.getSelection()?.getRangeAt(0).getBoundingClientRect()
-            if (hlBoundingClientRect.x <= 0 || hlBoundingClientRect.y <= 0) {
-                return {
-                    width: 0,
-                    height: 0,
-                    x: mouseEvent.clientX,
-                    y: mouseEvent.clientY,
-                    top: mouseEvent.clientY,
-                    left: mouseEvent.clientX,
-                    right: mouseEvent.clientX,
-                    bottom: mouseEvent.clientY,
-                };
-            } else {
-                return hlBoundingClientRect
-            }
-        },
-        getClientRects: () => document.getSelection()?.getRangeAt(0).getClientRects()
-    };
-    createPopoverContainer()
-    const tooltip = document.querySelector(".tooltip");
-    //TODO: Figure out the computePosition function
-    const arrowElement: HTMLElement | null = document.getElementById("arrowElement")
-    const arrowLen = arrowElement?.offsetWidth;
-    // Get half the arrow box's hypotenuse length
-    const floatingOffset = Math.sqrt(2 * arrowLen ** 2) / 2;
-    computePosition(virtualEl, document.querySelector('.tooltip'), {
-        placement: "bottom",
-        middleware: [
-            offset(floatingOffset),
-            flip(),
-            shift({ padding: 5 }),
-            arrow({ element: arrowElement })
-        ]
-    }).then(({x, y, middlewareData, placement}) => {
-        const selectedWord: string = document.getSelection().toString().toLowerCase().trim()
-        cWord.title = selectedWord
-        // const state = document.getElementsByClassName('tooltip')?.[0]?.contains(k)
-        const { width, height } = virtualEl.getBoundingClientRect();
-        if (true) {
-            // if (selectedWord.length === 0) {
-                tooltip.innerHTML = ""
-            //     // Arrow element
-            //     const arrowElement = document.createElement('div')
-            //     arrowElement.id = "arrowElement"
-            //     tooltip.appendChild(arrowElement)
-            // }
-            setTimeout(async () => {
-                tooltip.appendChild(await appendTranslation(selectedWord))
-                tooltip.appendChild(await appendingRecordings(selectedWord))
-                // ReactDOM.render(<App />, document.querySelector(".tooltip"))
-            }, 0)
-            Object.assign(tooltip.style, {
-                left: `${x}px`,
-                top: `${y}px`,
-                // visibility: (selectedWord.length === 0) ? 'hidden' : 'visible',
-            });
-            const side = placement.split("-")[0];
-            const staticSide = {
-              top: "bottom",
-              right: "left",
-              bottom: "top",
-              left: "right"
-            }[side];
-            if (middlewareData.arrow) {
-                const {x , y} = middlewareData.arrow;
-                console.log(x, y)
-                console.log(arrowElement)
-                console.log(x == null)
-                Object.assign(arrowElement.style, {
-                  left: x != null ? `${x}px` : "",
-                    top: y != null ? `${y}px` : "",
-                    right: "",
-                    bottom: "",
-                    [staticSide]: `${-arrowLen / 2}px`,
-                    transform: "rotate(45deg)",
-                    background: "red",
-                });
-            } else { console.log('WTH') }
-        }
-    });
-});
+    // if (root) {
+    //     root.unmount()
+    //     root = null
+    // }
+    removeContainer()
 
+    // $popupCard.remove()
+}
+
+async function removeContainer() {
+    const $container = await getContainer()
+    $container.remove()
+}
+
+const mouseDownHandler = async (event: MouseEvent) => {
+    // mousedownTarget = event.target
+    // const settings = await utils.getSettings()
+    // hidePopupThumb()
+    // if (!settings.pinned) {
+        hidePopupCard()
+    // }
+}
+document.addEventListener('mousedown', mouseDownHandler)
+
+
+//             setTimeout(async () => {
+//                 tooltip.appendChild(await appendTranslation(selectedWord))
+//                 tooltip.appendChild(await appendingRecordings(selectedWord))
+//                 // ReactDOM.render(<App />, document.querySelector(".tooltip"))
+//             }, 0)
+
+export const getClientX = (event: MouseEvent) => {
+    return event.clientX
+}
+
+export const getClientY = (event: MouseEvent) => {
+    return event.clientY
+}
+
+const mouseUpHandler = async (event: MouseEvent) => {
+// const mouseUpHandler = async (event: UserEventType) => {
+    // lastMouseEvent = event
+    // const settings = await utils.getSettings()
+    const autoTranslate = true
+    const alwaysShowIcons = true
+
+    let mousedownTarget = event.target
+
+    if (
+        mousedownTarget instanceof HTMLElement
+    )
+
+    // if (
+    //     (mousedownTarget instanceof HTMLInputElement || mousedownTarget instanceof HTMLTextAreaElement)
+    //     && settings.selectInputElementsText === false
+    // ) {
+    //     return
+    // }
+
+    window.setTimeout(async () => {
+        const sel = window.getSelection()
+        let text = (sel?.toString() ?? '').trim()
+        if (!text) {
+            if (event.target instanceof HTMLInputElement || event.target instanceof HTMLTextAreaElement) {
+                const elem = event.target
+                text = elem.value.substring(elem.selectionStart ?? 0, elem.selectionEnd ?? 0).trim()
+            }
+        } else {
+            // if (settings.autoTranslate === true) {
+            if (autoTranslate === true) {
+                const x = getClientX(event)
+                const y = getClientY(event)
+                showPopupCard(
+                    { getBoundingClientRect: () => new DOMRect(x, y, popupCardOffset, popupCardOffset) },
+                    new Word(text)
+                )
+            }
+            // else if (alwaysShowIcons === true && getCaretNodeType(event) === Node.TEXT_NODE) {
+            //     showPopupThumb(text, getPageX(event) + popupCardOffset, getPageY(event) + popupCardOffset)
+            // }
+        }
+    })
+}
+
+document.addEventListener('mouseup', mouseUpHandler)
