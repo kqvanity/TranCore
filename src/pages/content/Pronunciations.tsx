@@ -1,24 +1,30 @@
-import React, { useState, useEffect } from "react";
+import React, {useState, useEffect, useRef} from "react";
 import { loadPronunciations } from ".";
 import { Pronunciation } from "./model";
-import { playAudio } from "./pronunciation/audio";
+import AudioPlayer, {RHAP_UI} from "react-h5-audio-player";
 
-export function PronunciationList({term}) {
+interface Word {
+    term: string
+}
+
+export function PronunciationList(word: Word) {
   const [pronunciations, setPronunciations] = useState<Pronunciation[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    (async () => {
+  const fetchData = async () => {
       try {
-        const data = await loadPronunciations(term);
+        const data = await loadPronunciations(word.term);
         setPronunciations(data);
         setIsLoading(false);
       } catch (err: any) {
         setError(err);
         setIsLoading(false);
       }
-    })();
+  }
+
+  useEffect(() => {
+    fetchData()
   }, []);
 
   if (error) {
@@ -40,15 +46,26 @@ export function PronunciationList({term}) {
   return (
     <div className="__pronunciations-list">
       <h2>Pronunciations</h2>
-      <ul>
+      <div>
         {pronunciations.map((item, index) => {
-            return <li>
-                <button onClick={() => playAudio(item.url)}>Play</button>    
-                <span>{item.title}</span>
-            </li>
+            return <PronPlayer
+                title={item.title}
+                url={item.url}
+            />
         })}
-      </ul>
+      </div>
     </div>
   );
 }
 
+const PronPlayer = (pron: Pronunciation) => {
+    return <div>
+        <AudioPlayer
+            layout={"horizontal"}
+            src={pron.url}
+            customControlsSection={[RHAP_UI.MAIN_CONTROLS]}
+            showJumpControls={false}
+            customProgressBarSection={[]}
+        />
+    </div>
+}
