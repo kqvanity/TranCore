@@ -1,23 +1,22 @@
 import Fuse from 'fuse.js';
 import { readConfiguration } from "./configurations";
 import { Pronunciation, Word } from './model';
-// import { triggerKeyed } from './utils';
 import { containerID, popupCardID, popupCardOffset, popupThumbID, zIndex } from './consts'
 import { attachEventsToContainer } from "./utils";
 import { showPopupCard } from "./floating";
 import { retrieveRecordings } from "./pronunciation/forvo";
 
-let userConfiguration = await readConfiguration()
-
-export const loadPronunciations = async (word: string): Pronunciation[] => {
-    const langaugeCode = userConfiguration["fromLanguage"];
-    let recordings = await retrieveRecordings(word, langaugeCode)
+export const loadPronunciations = async (word: string): Promise<Pronunciation[]> => {
+    let userConfiguration = await readConfiguration()
+    const langCode = userConfiguration["fromLanguage"];
+    let recordings = await retrieveRecordings(word, langCode)
     const fuse = new Fuse(recordings ?? [], {
         keys: [
             "title"
         ],
         threshold: 1.0
     })
+    console.log(recordings)
     recordings = fuse.search(word).map((result) => result.item)
     return recordings
 }

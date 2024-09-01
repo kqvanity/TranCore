@@ -2,6 +2,7 @@ import { BaseProvider, DarkTheme, LightTheme } from 'baseui'
 import { useEffect, useState } from "react";
 import { parseGoogleTranslateResponse } from "./translation/Translation";
 import { useMemo } from 'react';
+import {Word} from "./model";
 
 type BaseThemeType = "light" | "dark"
 const useCurrentThemeType = (): BaseThemeType => {
@@ -14,7 +15,7 @@ const useTheme = () => {
     return { theme, themeType }
 }
 
-export function Translator({term}) {
+export function Translator(word: Word) {
     
     const { theme } = useTheme()
 
@@ -22,7 +23,7 @@ export function Translator({term}) {
 
     useEffect(() => {
         (async () => {
-            const gTranslation = await parseGoogleTranslateResponse(term)
+            const gTranslation = await parseGoogleTranslateResponse(word.title)
             setTranslation(gTranslation)
         })();
     })

@@ -1,7 +1,7 @@
 import React, { Suspense, useMemo } from 'react'
 import { createRoot, Root } from 'react-dom/client'
 import { type ReferenceElement } from '@floating-ui/dom'
-import { createPopoverContainer, getContainer, queryPopupCardElement } from '.'
+import { getContainer, queryPopupCardElement } from '.'
 import InnerContainer from './InnerContainer'
 import { JssProvider } from 'react-jss'
 import { popupCardID } from './consts'
@@ -18,21 +18,6 @@ async function createPopupCard() {
     $popupCard.id = popupCardID
     const $container = await getContainer()
     $container.shadowRoot?.querySelector('div')?.appendChild($popupCard)
-    if ($container.shadowRoot) {
-        const shadowRoot = $container.shadowRoot
-        // if (import.meta.hot) {
-        //     const { addViteStyleTarget } = await import('@samrum/vite-plugin-web-extension/client')
-        //     await addViteStyleTarget(shadowRoot)
-        // } else {
-            // const browser = await utils.getBrowser()
-            import.meta.PLUGIN_WEB_EXT_CHUNK_CSS_PATHS?.forEach((cssPath) => {
-                const styleEl = document.createElement('link')
-                // styleEl.setAttribute('rel', 'stylesheet')
-                // styleEl.setAttribute('href', browser.runtime.getURL(cssPath))
-                shadowRoot.appendChild(styleEl)
-            })
-        // }
-    }
     return $popupCard
 }
 
@@ -56,18 +41,17 @@ export async function showPopupCard(reference: ReferenceElement, word: Word, aut
         prefix: `${PREFIX}-styletron-`,
     })
 
-
     root.render(
         <React.StrictMode>
             <GlobalSuspense>
                 <JSS jss={jss} classNamePrefix='__yetone-openai-translator-jss-'>
                     <InnerContainer reference={reference}>
                         <StyletronProvider value={engine}>
-                            <Translator 
-                                term= {word.title}
+                            <Translator
+                                title={word.title}
                             />
-                            <PronunciationList 
-                                term={word.title}
+                            <PronunciationList
+                                 term={word.title}
                             />
                         </StyletronProvider>
                     </InnerContainer>

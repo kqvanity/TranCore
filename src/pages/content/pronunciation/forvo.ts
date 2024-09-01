@@ -6,7 +6,7 @@ const loadJsonResponse = async (url: string) => {
     return (await JSON.parse(String(jsonResponse)))
 }
 
-async function loadSingleWords(url: string) {
+async function loadPronunciations(url: string) {
     let recordings: Pronunciation[] = []
     const response = await loadJsonResponse(url)
     for (let pronunciation of response) {
@@ -18,8 +18,11 @@ async function loadSingleWords(url: string) {
     return (recordings)
 }
 
-export async function retrieveRecordings(word: string, langCode = 'en'){
+export async function retrieveRecordings(
+    word: string,
+    langCode = 'en'
+){
     const endPoint = `http://kam:9999/pronunciations/${word}?code=${langCode}`
-    const recordings: Pronunciation[] = await loadSingleWords(endPoint)
+    const recordings: Pronunciation[] = await loadPronunciations(endPoint)
     return (recordings.sort((a, b) => a.title.length - b.title.length))
 }

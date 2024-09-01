@@ -1,6 +1,6 @@
 import {GoogleTranslateResponse} from "./translation/Translation";
 
-export const fetchData = async (message: Message) => {
+export const fetchData = async (message: Message): Promise<string> => {
     return new Promise((resolve, reject) => {
         chrome.runtime.sendMessage({remoteSiteUrl: message.remoteSiteUrl, msg: message.msg}, async (response: any) => {
             resolve(response)
