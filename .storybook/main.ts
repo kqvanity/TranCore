@@ -7,7 +7,7 @@ const config: StorybookConfig = {
     name: "@storybook/react-webpack5",
     options: {},
   },
-    stories: ['../src/**/*.mdx', '../src/**/*.stories.@(js|jsx|mjs|ts|tsx)'],
+    stories: ['../src/**/*.stories.@(js|jsx|mjs|ts|tsx)'],
   core: {
     builder: {
       name: '@storybook/builder-webpack5',
