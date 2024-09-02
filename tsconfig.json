@@ -15,7 +15,6 @@
     "noEmit": false,
     "jsx": "react-jsx",
     "baseUrl": ".",
-    "rootDir": "src",
     "outDir": "build"
   },
   "include": [

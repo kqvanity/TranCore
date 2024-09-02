@@ -58,7 +58,6 @@
     "react-draggable": "^4.4.6",
     "react-refresh": "^0.14.2",
     "react-refresh-typescript": "^2.0.9",
-    "react-scripts": "^5.0.1",
     "storybook": "^8.2.9",
     "style-loader": "^4.0.0",
     "tsconfig-paths-webpack-plugin": "^4.1.0",
