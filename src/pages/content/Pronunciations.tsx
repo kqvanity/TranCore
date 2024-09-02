@@ -1,7 +1,7 @@
 import React, {useState, useEffect, useRef} from "react";
 import { loadPronunciations } from ".";
 import { Pronunciation } from "./model";
-import AudioPlayer, {RHAP_UI} from "react-h5-audio-player";
+import { PronPlayer } from "./PronPlayer";
 
 interface Word {
     term: string
@@ -56,16 +56,4 @@ export function PronunciationList(word: Word) {
       </div>
     </div>
   );
-}
-
-const PronPlayer = (pron: Pronunciation) => {
-    return <div>
-        <AudioPlayer
-            layout={"horizontal"}
-            src={pron.url}
-            customControlsSection={[RHAP_UI.MAIN_CONTROLS]}
-            showJumpControls={false}
-            customProgressBarSection={[]}
-        />
-    </div>
 }

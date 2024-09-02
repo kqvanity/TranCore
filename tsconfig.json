@@ -1,9 +1,8 @@
 {
   "compilerOptions": {
     "target": "es5",
-    "lib": ["es2015", "dom"],
-    // "lib": ["dom", "dom.iterable", "esnext"],
-    // "allowJs": false,
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "allowJs": false,
     "skipLibCheck": true,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
@@ -15,13 +14,15 @@
     "resolveJsonModule": true,
     "noEmit": false,
     "jsx": "react-jsx",
-    "paths": {
-        "@src/*": ["src/*"]
-    },
-    "baseUrl": "./",
-    "rootDir": "./src",
-    "outDir": "./build"
+    "baseUrl": ".",
+    "rootDir": "src",
+    "outDir": "build"
   },
-  // "include": ["src"],
-  // "exclude": ["build", "node_modules"]
+  "include": [
+    "src"
+  ],
+  "exclude": [
+    "build",
+    "node_modules"
+  ]
 }
