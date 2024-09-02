@@ -32,7 +32,7 @@ const config: StorybookConfig = {
     reactDocgen: 'react-docgen-typescript',
   },
   addons: [
-      // "@storybook/preset-create-react-app",
+      "@storybook/preset-create-react-app",
       "@storybook/addon-onboarding",
       "@storybook/addon-links",
       "@storybook/addon-essentials",
