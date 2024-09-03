@@ -1,5 +1,5 @@
 import AudioPlayer, {RHAP_UI} from "react-h5-audio-player";
-import { Pronunciation } from "./model";
+import { Pronunciation } from "pages/content/model";
 
 export const PronPlayer = (pron: Pronunciation) => {
     return <div>

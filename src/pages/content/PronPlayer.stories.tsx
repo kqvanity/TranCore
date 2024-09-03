@@ -1,10 +1,10 @@
-import type { ComponentMeta } from "@storybook/react"
-import { PronPlayer } from "./PronPlayer";
+import type { Meta } from "@storybook/react"
+import {PronPlayer} from "pages/content/PronPlayer";
 
 export default {
     title: "Component Meta",
     component: PronPlayer
-} as ComponentMeta<typeof PronPlayer>
+} as Meta<typeof PronPlayer>
 
 export const PronList = () => <PronPlayer
     title="Gamer Girl"
