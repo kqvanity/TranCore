@@ -2,7 +2,7 @@ chrome.storage.local.get(["language"], (data) => {
     if (chrome.runtime.lastError) {
         console.error(`Error reading feature value`)
     }
-    document.getElementById("language").textContent = data["language"]
+    document.getElementById("language").value = data["language"]
 })
 
 document.getElementById("language")?.addEventListener("change", () => {
