@@ -10,11 +10,10 @@ export const PronPlayer = (pron: Pronunciation) => {
             showJumpControls={false}
             customProgressBarSection={[]}
             style={{
-                scale: 2.0,
-                backgroundColor: "yellow",
                 display: "inline-block",
                 width: "0px",
-                paddingRight: "30px"
+                paddingRight: "30px",
+                transform: "scale(1.3)"
             }}
         />
         <span>{pron.title}</span>
