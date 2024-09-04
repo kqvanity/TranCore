@@ -6,7 +6,6 @@ var webpack = require('webpack'),
   HtmlWebpackPlugin = require('html-webpack-plugin'),
   TerserPlugin = require('terser-webpack-plugin');
 var { CleanWebpackPlugin } = require('clean-webpack-plugin');
-var ReactRefreshTypeScript = require('react-refresh-typescript');
 
 // const ASSET_PATH = process.env.ASSET_PATH || '/';
 
@@ -64,38 +63,13 @@ var options = {
         exclude: /node_modules/,
       },
       {
-        test: /\.(ts|tsx)$/,
+        test: /\.(tsx|ts)$/,
         exclude: /node_modules/,
         use: [
-          {
-            loader: require.resolve('ts-loader'),
-            options: {
-              getCustomTransformers: () => ({
-                before: [isDevelopment && ReactRefreshTypeScript()].filter(
-                  Boolean
-                ),
-              }),
-              transpileOnly: isDevelopment,
-            },
-          },
-        ],
-      },
-      {
-        test: /\.(js|jsx)$/,
-        use: [
-          {
-            loader: 'source-map-loader',
-          },
           {
             loader: require.resolve('babel-loader'),
-            options: {
-              plugins: [
-                isDevelopment && require.resolve('react-refresh/babel'),
-              ].filter(Boolean),
-            },
           },
         ],
-        exclude: /node_modules/,
       },
     ],
   },

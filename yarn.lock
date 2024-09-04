@@ -6120,7 +6120,7 @@ react-element-to-jsx-string@^15.0.0:
 
 react-h5-audio-player@^3.9.3:
   version "3.9.3"
-  resolved "https://registry.npmjs.org/react-h5-audio-player/-/react-h5-audio-player-3.9.3.tgz"
+  resolved "https://registry.yarnpkg.com/react-h5-audio-player/-/react-h5-audio-player-3.9.3.tgz#8214f5f0b775ddf79a2f6455f8ab2e16acb81b57"
   integrity sha512-D92SbCk6AJAsXYQ2qJqxeAvEjRXBQHY2q6dIZLaLL74eZi7VfynC0/EspHHbFDqBXDq7o2xNFH1Vas+HyXeE/w==
   dependencies:
     "@babel/runtime" "^7.10.2"

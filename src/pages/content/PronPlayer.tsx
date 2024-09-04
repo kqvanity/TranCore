@@ -9,6 +9,14 @@ export const PronPlayer = (pron: Pronunciation) => {
             customControlsSection={[RHAP_UI.MAIN_CONTROLS]}
             showJumpControls={false}
             customProgressBarSection={[]}
+            style={{
+                scale: 2.0,
+                backgroundColor: "yellow",
+                display: "inline-block",
+                width: "0px",
+                paddingRight: "30px"
+            }}
         />
+        <span>{pron.title}</span>
     </div>
 }

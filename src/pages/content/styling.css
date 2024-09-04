@@ -48,3 +48,11 @@ p.recording-name {
     font-family: sans-serif;
     display: float-left;
 }
+
+.inline-block-element {
+    display: inline-block;
+    transform: scale(2.0);
+    background-color: yellow;
+}
+/*.rhap_container {*/
+/*}*/
