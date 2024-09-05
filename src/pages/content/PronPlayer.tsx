@@ -1,5 +1,7 @@
 import AudioPlayer, {RHAP_UI} from "react-h5-audio-player";
 import { Pronunciation } from "pages/content/model";
+import Play from '../../assets/img/play.svg'
+import Pause from '../../assets/img/pause.svg'
 
 export const PronPlayer = (pron: Pronunciation) => {
     return <div>
@@ -9,11 +11,16 @@ export const PronPlayer = (pron: Pronunciation) => {
             customControlsSection={[RHAP_UI.MAIN_CONTROLS]}
             showJumpControls={false}
             customProgressBarSection={[]}
+            customIcons={{
+                play: <Play />,
+                pause: <Pause />,
+            }}
             style={{
                 display: "inline-block",
                 width: "0px",
-                paddingRight: "30px",
-                transform: "scale(1.3)"
+                paddingRight: "50px",
+                paddingLeft: "10px",
+                paddingBottom: "10px",
             }}
         />
         <span>{pron.title}</span>

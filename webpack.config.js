@@ -62,6 +62,10 @@ var options = {
         loader: 'html-loader',
         exclude: /node_modules/,
       },
+        {
+            test: /\.svg$/,
+            use: 'react-svg-loader'
+        },
       {
         test: /\.(tsx|ts)$/,
         exclude: /node_modules/,
@@ -70,7 +74,7 @@ var options = {
             loader: require.resolve('babel-loader'),
           },
         ],
-      },
+      }
     ],
   },
   resolve: {

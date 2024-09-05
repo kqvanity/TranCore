@@ -7,5 +7,6 @@ src/pages/content/styling.js
 src/pages/content/configurations.js
 scratchpad
 
+yarn.lock
 
 *storybook.log
