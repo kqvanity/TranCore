@@ -15,6 +15,7 @@ export function PronunciationList(word: Word) {
   const fetchData = async () => {
       try {
         const data = await loadPronunciations(word.term);
+        console.log(data)
         setPronunciations(data);
         setIsLoading(false);
       } catch (err: any) {
@@ -51,6 +52,8 @@ export function PronunciationList(word: Word) {
             return <PronPlayer
                 title={item.title}
                 url={item.url}
+                tags={item.tags}
+                translation={item.translation}
             />
         })}
       </div>

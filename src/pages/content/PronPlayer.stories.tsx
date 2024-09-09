@@ -1,5 +1,6 @@
 import type { Meta } from "@storybook/react"
 import {PronPlayer} from "pages/content/PronPlayer";
+import { Translation } from "./model";
 
 export default {
     title: "Component Meta",
@@ -9,9 +10,13 @@ export default {
 export const First = () => <PronPlayer
     title="Gamer Girl"
     url="https://"
+    tags={['noun']}
+    translation={new Translation('Eine frau liebe', 'de')}
 />
 
 export const Second = () => <PronPlayer
     title={"Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum."}
     url={""}
+    tags={['adjective']}
+    translation={new Translation('The lorem def', 'en')}
 />

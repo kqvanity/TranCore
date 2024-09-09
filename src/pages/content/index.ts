@@ -16,7 +16,6 @@ export const loadPronunciations = async (word: string): Promise<Pronunciation[]>
         ],
         threshold: 1.0
     })
-    console.log(recordings)
     recordings = fuse.search(word).map((result) => result.item)
     return recordings
 }

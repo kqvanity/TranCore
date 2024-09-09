@@ -1,5 +1,5 @@
 import { fetchData } from "../fetch";
-import { Pronunciation } from "../model";
+import { Pronunciation, Translation } from "../model";
 
 const loadJsonResponse = async (url: string) => {
     const jsonResponse = await fetchData({ remoteSiteUrl: url, msg: 'json' })
@@ -11,8 +11,10 @@ async function loadPronunciations(url: string) {
     const response = await loadJsonResponse(url)
     for (let pronunciation of response) {
         recordings.push(new Pronunciation(
-            pronunciation['Title'],
-            pronunciation['URL'],
+            pronunciation['title'],
+            pronunciation['url'],
+            pronunciation['tags'],
+            pronunciation['translation']
         )) 
     }
     return (recordings)

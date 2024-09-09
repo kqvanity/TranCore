@@ -11,6 +11,9 @@ export const PronPlayer = (pron: Pronunciation) => {
             customControlsSection={[RHAP_UI.MAIN_CONTROLS]}
             showJumpControls={false}
             customProgressBarSection={[]}
+            preload="none"
+            autoPlay={false}
+            autoPlayAfterSrcChange={false}
             customIcons={{
                 play: <Play />,
                 pause: <Pause />,
@@ -24,5 +27,7 @@ export const PronPlayer = (pron: Pronunciation) => {
             }}
         />
         <span>{pron.title}</span>
+        <span>{' / '}</span>
+        <span>{pron.translation?.title}</span>
     </div>
 }
