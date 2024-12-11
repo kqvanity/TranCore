@@ -1,6 +1,6 @@
 {
     "name": "TranCore",
-    "version": "0.0.1",
+    "version": "0.0.2",
     "description": "Auto-popup tooltip displaying translation & pronunciation of currently selected word(s)",
     "manifest_version": 3,
     "author": "Polendina",
