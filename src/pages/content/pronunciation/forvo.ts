@@ -22,21 +22,6 @@ const loadPronunciations = async (url: string): Promise<Pronunciation[]> => {
   return recordings;
 }
 
-<<<<<<< Updated upstream
-async function loadPronunciations(url: string) {
-    let recordings: Pronunciation[] = []
-    const response = await loadJsonResponse(url)
-    for (let pronunciation of response) {
-        recordings.push(new Pronunciation(
-            pronunciation['title'],
-            pronunciation['url'],
-            pronunciation['tags'],
-            pronunciation['translation']
-        )) 
-    }
-}
-
-<<<<<<< Updated upstream
 export async function retrieveRecordings(
     word: string,
     langCode = 'en'
