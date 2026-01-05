@@ -21,12 +21,13 @@ async function createPopupCard() {
     return $popupCard
 }
 
-
-export async function showPopupCard(reference: ReferenceElement, word: Word, autoFocus: boolean | undefined = false) {
+export async function showPopupCard(
+    reference: ReferenceElement,
+    word: Word,
+    autoFocus: boolean | undefined = false
+) {
 
     const $popupCard = await createPopupCard()
-
-    let root = createRoot($popupCard)
 
     const JSS = JssProvider
 
@@ -41,6 +42,9 @@ export async function showPopupCard(reference: ReferenceElement, word: Word, aut
         prefix: `${PREFIX}-styletron-`,
     })
 
+    console.log("Root", root)
+    let root = createRoot($popupCard)
+    console.log("Root", root)
     root.render(
         <React.StrictMode>
             <GlobalSuspense>
@@ -59,6 +63,7 @@ export async function showPopupCard(reference: ReferenceElement, word: Word, aut
             </GlobalSuspense>
         </React.StrictMode>
     )
+    return root
     // setExternalOriginalText(text)
 }
 
@@ -67,4 +72,3 @@ function GlobalSuspense({ children }: { children: React.ReactNode }) {
     // TODO: a global loading fallback
     return <Suspense fallback={null}>{children}</Suspense>
 }
-

@@ -1,11 +1,12 @@
 import AudioPlayer, {RHAP_UI} from "react-h5-audio-player";
+import H5AudioPlayer from "react-h5-audio-player";
 import { Pronunciation } from "pages/content/model";
 import Play from '../../assets/img/play.svg'
 import Pause from '../../assets/img/pause.svg'
 
 export const PronPlayer = (pron: Pronunciation) => {
     return <div>
-        <AudioPlayer
+        <H5AudioPlayer
             layout={"horizontal"}
             src={pron.url}
             customControlsSection={[RHAP_UI.MAIN_CONTROLS]}

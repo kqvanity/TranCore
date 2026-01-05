@@ -5,6 +5,9 @@ import { containerID, popupCardID, popupCardOffset, popupThumbID, zIndex } from 
 import { attachEventsToContainer } from "./utils";
 import { showPopupCard } from "./floating";
 import { retrieveRecordings } from "./pronunciation/forvo";
+import {Root} from "react-dom/client";
+
+let root: Root | null = null
 
 export const loadPronunciations = async (word: string): Promise<Pronunciation[]> => {
     let userConfiguration = await readConfiguration()
@@ -72,10 +75,13 @@ async function hidePopupCard() {
     if (!$popupCard) {
         return
     }
-    // if (root) {
-    //     root.unmount()
-    //     root = null
-    // }
+    console.log("Unmounting root - before", root)
+    if (root) {
+        console.log("Unmounting root - after", root)
+        root.unmount()
+        root = null
+    }
+    console.log("Unmounting root - after all", root)
     removeContainer()
 
     // $popupCard.remove()
@@ -137,9 +143,10 @@ const mouseUpHandler = async (event: MouseEvent) => {
             if (autoTranslate === true) {
                 const x = getClientX(event)
                 const y = getClientY(event)
-                showPopupCard(
+                root = await showPopupCard(
                     { getBoundingClientRect: () => new DOMRect(x, y, popupCardOffset, popupCardOffset) },
-                    new Word(text)
+                    new Word(text),
+                    true
                 )
             }
             // else if (alwaysShowIcons === true && getCaretNodeType(event) === Node.TEXT_NODE) {

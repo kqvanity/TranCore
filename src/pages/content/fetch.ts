@@ -1,3 +1,4 @@
+// import { sendMessage } from "webext-bridge/background";
 import {GoogleTranslateResponse} from "./translation/Translation";
 
 export const fetchData = async (message: Message): Promise<string> => {
@@ -7,6 +8,19 @@ export const fetchData = async (message: Message): Promise<string> => {
             reject(response)
         })
     })
+    // const response = await sendMessage(
+    //     message.remoteSiteUrl,
+    //     {},
+    //     "background"
+    // );
+    // console.log(response)
+    // console.log(typeof response)
+    // // resturn a string promise
+    // return new Promise((resolve, reject) => {
+    //     resolve("")
+    //     reject(response)
+    // })
+    // // return response;
 }
 
 export const fetchTranslation = async (wordUrl: string): Promise<GoogleTranslateResponse> => {

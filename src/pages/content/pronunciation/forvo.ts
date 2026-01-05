@@ -2,10 +2,27 @@ import { fetchData } from "../fetch";
 import { Pronunciation, Translation } from "../model";
 
 const loadJsonResponse = async (url: string) => {
-    const jsonResponse = await fetchData({ remoteSiteUrl: url, msg: 'json' })
-    return (await JSON.parse(String(jsonResponse)))
+  const jsonResponse = await fetchData({ remoteSiteUrl: url, msg: "json" });
+  return await JSON.parse(String(jsonResponse));
+};
+
+const loadPronunciations = async (url: string): Promise<Pronunciation[]> => {
+  let recordings: Pronunciation[] = [];
+  const response = await loadJsonResponse(url);
+  for (let element of response) {
+    const pronunciation = new Pronunciation(
+      element["title"],
+      element["url"],
+      element["tags"],
+      element["translation"],
+    );
+    pronunciation.title = pronunciation.title.toLowerCase();
+    recordings.push(pronunciation);
+  }
+  return recordings;
 }
 
+<<<<<<< Updated upstream
 async function loadPronunciations(url: string) {
     let recordings: Pronunciation[] = []
     const response = await loadJsonResponse(url)
@@ -17,9 +34,9 @@ async function loadPronunciations(url: string) {
             pronunciation['translation']
         )) 
     }
-    return (recordings)
 }
 
+<<<<<<< Updated upstream
 export async function retrieveRecordings(
     word: string,
     langCode = 'en'
