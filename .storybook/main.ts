@@ -1,44 +1,23 @@
-import type { StorybookConfig } from '@storybook/react-webpack5';
-import TsconfigPathsPlugin from 'tsconfig-paths-webpack-plugin';
-import NodePolyfillPlugin from 'node-polyfill-webpack-plugin';
+import type { StorybookConfig } from '@storybook/react-vite';
+import tsconfigPaths from 'vite-tsconfig-paths';
 
 const config: StorybookConfig = {
-  framework: {
-    name: "@storybook/react-webpack5",
-    options: {},
-  },
-    stories: ['../src/**/*.stories.@(js|jsx|mjs|ts|tsx)'],
-  core: {
-    builder: {
-      name: '@storybook/builder-webpack5',
-      options: {
-        fsCache: false,
-        lazyCompilation: true,
-      },
-    },
-  },
-    webpackFinal: async (config) => {
-        if (config.plugins) {
-          config.plugins.push(new NodePolyfillPlugin());
-        }
-        if (config.resolve) {
-          config.resolve.plugins = [new TsconfigPathsPlugin()];
-        }
+  "stories": [
+    "../src/**/*.mdx",
+    "../src/**/*.stories.@(js|jsx|mjs|ts|tsx)"
+  ],
+  "addons": [
+    "@chromatic-com/storybook",
+    "@storybook/addon-vitest",
+    "@storybook/addon-a11y",
+    "@storybook/addon-docs"
+  ],
+  "framework": "@storybook/react-vite",
+  async viteFinal(config) {
+    if (config.plugins) {
+      config.plugins.push(tsconfigPaths());
+    }
     return config;
   },
-  typescript: {
-    check: false,
-    skipCompiler: false,
-    reactDocgen: 'react-docgen-typescript',
-  },
-  addons: [
-      "@storybook/addon-onboarding",
-      "@storybook/addon-links",
-      "@storybook/addon-essentials",
-      "@chromatic-com/storybook",
-      "@storybook/addon-interactions",
-      "@storybook/addon-webpack5-compiler-babel"
-  ],
 };
- 
 export default config;
