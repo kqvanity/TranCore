@@ -10,7 +10,7 @@ interface Word {
 export function PronunciationList(word: Word) {
   const [pronunciations, setPronunciations] = useState<Pronunciation[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<Error | null>(null);
 
   const fetchData = async () => {
       try {
@@ -31,7 +31,7 @@ export function PronunciationList(word: Word) {
   if (error) {
     return (
       <div>
-        <h2>Error: {error}...</h2>
+        <h2>Error: {error.message}...</h2>
       </div>
     );
   }
