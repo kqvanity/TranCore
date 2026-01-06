@@ -3,22 +3,25 @@ import { createRoot, Root } from 'react-dom/client'
 import { type ReferenceElement } from '@floating-ui/dom'
 import { getContainer, queryPopupCardElement } from '.'
 import InnerContainer from './InnerContainer'
-import { JssProvider } from 'react-jss'
 import { popupCardID } from './consts'
-import { create } from 'jss'
-import preset from 'jss-preset-default'
 import { Word } from './model'
 import { Provider as StyletronProvider } from 'styletron-react'
 import { Client as Styletron } from 'styletron-engine-atomic'
 import { PronunciationList } from './Pronunciations'
 import { Translator } from './Translator'
 
-async function createPopupCard() {
-    const $popupCard = document.createElement('div')
-    $popupCard.id = popupCardID
-    const $container = await getContainer()
-    $container.shadowRoot?.querySelector('div')?.appendChild($popupCard)
-    return $popupCard
+// Persistent root and element for the popup
+let popupRoot: Root | null = null;
+let $popupCardElement: HTMLDivElement | null = null;
+
+async function getOrCreatePopupCardElement(): Promise<HTMLDivElement> {
+    if (!$popupCardElement) {
+        $popupCardElement = document.createElement('div');
+        $popupCardElement.id = popupCardID;
+        const $container = await getContainer();
+        $container.shadowRoot?.querySelector('div')?.appendChild($popupCardElement);
+    }
+    return $popupCardElement;
 }
 
 export async function showPopupCard(
@@ -26,15 +29,7 @@ export async function showPopupCard(
     word: Word,
     autoFocus: boolean | undefined = false
 ) {
-
-    const $popupCard = await createPopupCard()
-
-    const JSS = JssProvider
-
-    const jss = create().setup({
-        ...preset(),
-        insertionPoint: $popupCard?.parentElement ?? undefined
-    })
+    const $popupCard = await getOrCreatePopupCardElement();
 
     const PREFIX = '__yetone-openai-translator'
     const engine = new Styletron({
@@ -42,33 +37,38 @@ export async function showPopupCard(
         prefix: `${PREFIX}-styletron-`,
     })
 
-    console.log("Root", root)
-    let root = createRoot($popupCard)
-    console.log("Root", root)
-    root.render(
+    if (!popupRoot) {
+        popupRoot = createRoot($popupCard);
+    }
+
+    popupRoot.render(
         <React.StrictMode>
             <GlobalSuspense>
-                <JSS jss={jss} classNamePrefix='__yetone-openai-translator-jss-'>
-                    <InnerContainer reference={reference}>
+                <InnerContainer reference={reference}>
                         <StyletronProvider value={engine}>
-                            <Translator
-                                title={word.title}
-                            />
-                            <PronunciationList
-                                 term={word.title}
-                            />
+                            {/* Pass the whole word object */}
+                            <Translator word={word} />
+                            <PronunciationList word={word} />
                         </StyletronProvider>
                     </InnerContainer>
-                </JSS>
             </GlobalSuspense>
         </React.StrictMode>
     )
-    return root
-    // setExternalOriginalText(text)
+    // Removed direct return of root, as it's now managed persistently.
+    // Logic for hiding/unmounting should be separate.
+}
+
+export function hidePopupCard() {
+    if (popupRoot && $popupCardElement) {
+        popupRoot.unmount();
+        $popupCardElement.remove(); // Remove the element from DOM
+        popupRoot = null;
+        $popupCardElement = null;
+    }
 }
 
 
 function GlobalSuspense({ children }: { children: React.ReactNode }) {
     // TODO: a global loading fallback
-    return <Suspense fallback={null}>{children}</Suspense>
+    return <Suspense fallback={<div>Loading...</div>}>{children}</Suspense>
 }
