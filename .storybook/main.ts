@@ -1,5 +1,10 @@
 import type { StorybookConfig } from '@storybook/react-vite';
 import tsconfigPaths from 'vite-tsconfig-paths';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const config: StorybookConfig = {
   "stories": [
@@ -17,6 +22,14 @@ const config: StorybookConfig = {
     if (config.plugins) {
       config.plugins.push(tsconfigPaths());
     }
+    config.resolve = {
+      ...config.resolve,
+      alias: {
+        ...config.resolve?.alias,
+        'src/pages/content/fetch.ts': path.resolve(__dirname, '../tests/mocks/fetch.ts'),
+        'src/pages/content/pronunciation/forvo.ts': path.resolve(__dirname, '../tests/mocks/pronunciation/forvo.ts'),
+      },
+    };
     return config;
   },
 };
