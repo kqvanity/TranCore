@@ -22,14 +22,6 @@ const config: StorybookConfig = {
     if (config.plugins) {
       config.plugins.push(tsconfigPaths());
     }
-    config.resolve = {
-      ...config.resolve,
-      alias: {
-        ...config.resolve?.alias,
-        'src/pages/content/fetch.ts': path.resolve(__dirname, '../tests/mocks/fetch.ts'),
-        'src/pages/content/pronunciation/forvo.ts': path.resolve(__dirname, '../tests/mocks/pronunciation/forvo.ts'),
-      },
-    };
     return config;
   },
 };
