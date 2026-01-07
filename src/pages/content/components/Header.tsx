@@ -32,25 +32,29 @@ const useStyles = createUseStyles({
     },
 });
 
+import SwapIcon from '../../../assets/img/swap.svg';
+
+// ... (useStyles definition)
+    languageSwitch: {
+        display: 'flex',
+        alignItems: 'center',
+        gap: '5px',
+    },
+// ...
 export function Header() {
     const classes = useStyles();
-    // Mock data for languages
-    const languages = ['English', 'Chinese', 'Spanish', 'French'];
-    const [fromLanguage, setFromLanguage] = React.useState('English');
-    const [toLanguage, setToLanguage] = React.useState('Chinese');
-
-    const handleSwapLanguages = () => {
-        setFromLanguage(toLanguage);
-        setToLanguage(fromLanguage);
-    };
-
+    // ... (state and handlers)
     return (
         <div className={classes.header} data-tauri-drag-region>
             <span className={classes.title}>OpenAI Translator</span>
             <div className={classes.actions}>
-                <Dropdown options={languages} selected={fromLanguage} onSelect={setFromLanguage} />
-                <button className={classes.iconButton} onClick={handleSwapLanguages}>↔</button>
-                <Dropdown options={languages} selected={toLanguage} onSelect={setToLanguage} />
+                <div className={classes.languageSwitch}>
+                    <Dropdown options={languages} selected={fromLanguage} onSelect={setFromLanguage} />
+                    <button className={classes.iconButton} onClick={handleSwapLanguages}>
+                        <img src={SwapIcon} alt="Swap languages" style={{ width: '16px', height: '16px' }} />
+                    </button>
+                    <Dropdown options={languages} selected={toLanguage} onSelect={setToLanguage} />
+                </div>
                 <button className={classes.iconButton}>⚙</button>
                 <button className={classes.iconButton}>📌</button>
                 <button className={classes.iconButton}>X</button>
