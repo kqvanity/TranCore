@@ -1,7 +1,7 @@
 
 import { createContext, useContext } from 'react';
-import { GoogleTranslateResponse } from './translation/Translation';
-import { Pronunciation } from './model';
+import { GoogleTranslateResponse } from '../../core/adapter/gateways/translation/Translation';
+import { Pronunciation } from '../../core/domain/entities/model';
 
 export interface UserConfiguration {
     fromLanguage: string,

@@ -1,5 +1,5 @@
 import { fetchData } from "../fetch";
-import { Pronunciation, Translation } from "../model";
+import { Pronunciation, Translation } from "../../../domain/entities/model";
 
 const loadJsonResponse = async (url: string) => {
   const jsonResponse = await fetchData({ remoteSiteUrl: url, msg: "json" });

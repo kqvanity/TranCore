@@ -3,18 +3,18 @@ import React, { Suspense } from 'react';
 import { createRoot, Root } from 'react-dom/client';
 import { type ReferenceElement } from '@floating-ui/dom';
 import { getContainer } from '.';
-import InnerContainer from './InnerContainer';
+import InnerContainer from './components/InnerContainer';
 import { popupCardID } from './consts';
-import { Word } from './model';
+import { Word } from '../../core/domain/entities/model';
 import { Provider as StyletronProvider } from 'styletron-react';
 import { Client as Styletron } from 'styletron-engine-atomic';
-import { PronunciationList } from './Pronunciations';
-import { Translator } from './Translator';
+import { PronunciationList } from './components/Pronunciations';
+import { Translator } from './components/Translator';
 import { ApiContext } from './ApiContext';
-import { fetchTranslation } from './fetch';
-import { readConfiguration } from './configurations';
-import { retrieveRecordings } from './pronunciation/forvo';
-import { Tabs } from './Tabs';
+import { fetchTranslation } from '../../core/adapter/gateways/fetch';
+import { readConfiguration } from '../../core/adapter/gateways/configurations';
+import { retrieveRecordings } from '../../core/adapter/gateways/pronunciation/forvo';
+import { Tabs } from './components/Tabs';
 
 // Persistent root and element for the popup
 let popupRoot: Root | null = null;

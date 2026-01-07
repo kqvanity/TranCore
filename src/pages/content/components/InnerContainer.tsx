@@ -9,10 +9,10 @@ import {
     popupCardMinWidth,
     popupCardMaxHeight,
     zIndex,
-} from './consts';
+} from '../consts';
 import { createUseStyles } from 'react-jss';
-import { useDraggable } from './hooks/useDraggable';
-import { useFloatingPosition } from './hooks/useFloatingPosition';
+import { useDraggable } from '../hooks/useDraggable';
+import { useFloatingPosition } from '../hooks/useFloatingPosition';
 import { ReferenceElement } from '@floating-ui/dom';
 
 type Props = {

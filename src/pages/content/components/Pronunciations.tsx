@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import Fuse from 'fuse.js';
-import { Pronunciation } from "./model";
+import { Pronunciation } from "../../../core/domain/entities/model";
 import { PronPlayer } from "./PronPlayer";
-import { useApi } from "./ApiContext";
+import { useApi } from "../ApiContext";
 
 interface Word {
     term: string

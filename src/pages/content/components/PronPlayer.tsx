@@ -1,4 +1,4 @@
-import { Pronunciation } from "./model";
+import { Pronunciation } from "../../../core/domain/entities/model";
 import { AudioPlayer } from "./AudioPlayer";
 import { createUseStyles } from "react-jss";
 

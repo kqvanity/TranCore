@@ -1,6 +1,6 @@
 import type { Meta } from "@storybook/react"
-import {PronPlayer} from "pages/content/PronPlayer";
-import { Translation } from "./model";
+import { PronPlayer } from "./PronPlayer";
+import { Translation } from "../../../core/domain/entities/model";
 
 export default {
     title: "Component Meta",

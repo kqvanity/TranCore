@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import { formatGoogleTranslateResponse, getGoogleTranslateUrl } from "./translation/Translation";
-import { useApi } from "./ApiContext";
-import { Word } from "./model";
+import { formatGoogleTranslateResponse, getGoogleTranslateUrl } from "../../../core/adapter/gateways/translation/Translation";
+import { useApi } from "../ApiContext";
+import { Word } from "../../../core/domain/entities/model";
 
 export function Translator({ word }: { word: Word }) {
     const [translation, setTranslation] = useState<string>("");

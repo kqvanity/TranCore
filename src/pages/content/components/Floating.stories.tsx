@@ -3,12 +3,12 @@ import type { Meta, StoryObj } from '@storybook/react';
 import InnerContainer from './InnerContainer';
 import { Translator } from './Translator';
 import { PronunciationList } from './Pronunciations';
-import { Word, Pronunciation } from './model';
+import { Word, Pronunciation } from '../../../core/domain/entities/model';
 import { Provider as StyletronProvider } from 'styletron-react';
 import { Client as Styletron } from 'styletron-engine-atomic';
 import { ReferenceElement } from '@floating-ui/dom';
-import { ApiContext, Api, UserConfiguration } from './ApiContext';
-import { GoogleTranslateResponse } from './translation/Translation';
+import { ApiContext, Api, UserConfiguration } from '../ApiContext';
+import { GoogleTranslateResponse } from '../../../core/adapter/gateways/translation/Translation';
 import { Tabs } from './Tabs';
 
 const mockApi: Api = {
