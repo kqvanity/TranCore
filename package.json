@@ -22,7 +22,6 @@
     "prop-types": "^15.8.1",
     "react": "^19.2.3",
     "react-dom": "^19.2.3",
-    "react-h5-audio-player": "^3.10.1",
     "react-jss": "^10.10.0",
     "styletron-engine-atomic": "^1.6.2",
     "styletron-react": "^6.1.1",
