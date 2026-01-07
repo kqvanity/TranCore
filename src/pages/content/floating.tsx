@@ -1,14 +1,20 @@
-import React, { Suspense, useMemo } from 'react'
-import { createRoot, Root } from 'react-dom/client'
-import { type ReferenceElement } from '@floating-ui/dom'
-import { getContainer, queryPopupCardElement } from '.'
-import InnerContainer from './InnerContainer'
-import { popupCardID } from './consts'
-import { Word } from './model'
-import { Provider as StyletronProvider } from 'styletron-react'
-import { Client as Styletron } from 'styletron-engine-atomic'
-import { PronunciationList } from './Pronunciations'
-import { Translator } from './Translator'
+
+import React, { Suspense } from 'react';
+import { createRoot, Root } from 'react-dom/client';
+import { type ReferenceElement } from '@floating-ui/dom';
+import { getContainer } from '.';
+import InnerContainer from './InnerContainer';
+import { popupCardID } from './consts';
+import { Word } from './model';
+import { Provider as StyletronProvider } from 'styletron-react';
+import { Client as Styletron } from 'styletron-engine-atomic';
+import { PronunciationList } from './Pronunciations';
+import { Translator } from './Translator';
+import { ApiContext } from './ApiContext';
+import { fetchTranslation } from './fetch';
+import { readConfiguration } from './configurations';
+import { retrieveRecordings } from './pronunciation/forvo';
+import { Tabs } from './Tabs';
 
 // Persistent root and element for the popup
 let popupRoot: Root | null = null;
@@ -23,6 +29,12 @@ async function getOrCreatePopupCardElement(): Promise<HTMLDivElement> {
     }
     return $popupCardElement;
 }
+
+const WordHeader = ({ text }: { text: string }) => (
+    <h1 style={{ fontSize: '24px', fontWeight: 'bold', margin: '0 0 15px 0', padding: '15px 15px 0 15px' }}>
+        {text}
+    </h1>
+);
 
 export async function showPopupCard(
     reference: ReferenceElement,
@@ -41,13 +53,6 @@ export async function showPopupCard(
         popupRoot = createRoot($popupCard);
     }
 
-import { ApiContext } from './ApiContext';
-import { fetchTranslation } from './fetch';
-import { readConfiguration } from './configurations';
-import { retrieveRecordings } from './pronunciation/forvo';
-
-// ... (previous code)
-
     popupRoot.render(
         <React.StrictMode>
             <GlobalSuspense>
@@ -58,17 +63,23 @@ import { retrieveRecordings } from './pronunciation/forvo';
                 }}>
                     <InnerContainer reference={reference}>
                         <StyletronProvider value={engine}>
-                            <Translator word={word} />
-                            <PronunciationList word={{ term: word.title }} />
+                            <WordHeader text={word.title} />
+                            <Tabs tabs={[
+                                {
+                                    label: 'Translation',
+                                    content: <Translator word={word} />
+                                },
+                                {
+                                    label: 'Pronunciation',
+                                    content: <PronunciationList word={{ 'term': word.title }} />
+                                }
+                            ]} />
                         </StyletronProvider>
                     </InnerContainer>
                 </ApiContext.Provider>
             </GlobalSuspense>
         </React.StrictMode>
     )
-// ... (rest of the code)
-    // Removed direct return of root, as it's now managed persistently.
-    // Logic for hiding/unmounting should be separate.
 }
 
 export function hidePopupCard() {

@@ -9,6 +9,7 @@ import { Client as Styletron } from 'styletron-engine-atomic';
 import { ReferenceElement } from '@floating-ui/dom';
 import { ApiContext, Api, UserConfiguration } from './ApiContext';
 import { GoogleTranslateResponse } from './translation/Translation';
+import { Tabs } from './Tabs';
 
 const mockApi: Api = {
     fetchTranslation: async (word: string): Promise<GoogleTranslateResponse> => {
@@ -83,13 +84,28 @@ const referenceElement: ReferenceElement = {
 
 const word = new Word('hello');
 
+const WordHeader = ({ text }: { text: string }) => (
+    <h1 style={{ fontSize: '24px', fontWeight: 'bold', margin: '0 0 15px 0', padding: '15px 15px 0 15px' }}>
+        {text}
+    </h1>
+);
+
 export const Default: Story = {
     args: {
         reference: referenceElement,
         children: (
             <>
-                <Translator word={word} />
-                {/* <PronunciationList word={{ 'term': 'hello' }} /> */}
+                <WordHeader text={word.title} />
+                <Tabs tabs={[
+                    {
+                        label: 'Translation',
+                        content: <Translator word={word} />
+                    },
+                    {
+                        label: 'Pronunciation',
+                        content: <PronunciationList word={{ 'term': 'hello' }} />
+                    }
+                ]} />
             </>
         ),
     },
