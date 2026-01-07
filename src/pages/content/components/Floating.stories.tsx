@@ -1,15 +1,17 @@
 import React from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
 import InnerContainer from './InnerContainer';
-import { Translator } from './Translator';
-import { PronunciationList } from './Pronunciations';
 import { Word, Pronunciation } from '../../../core/domain/entities/model';
 import { Provider as StyletronProvider } from 'styletron-react';
 import { Client as Styletron } from 'styletron-engine-atomic';
 import { ReferenceElement } from '@floating-ui/dom';
 import { ApiContext, Api, UserConfiguration } from '../ApiContext';
 import { GoogleTranslateResponse } from '../../../core/adapter/gateways/translation/Translation';
-import { Tabs } from './Tabs';
+import { UIStateProvider, useUIState } from '../UIStateContext';
+import { Header } from './Header';
+import { InputArea } from './InputArea';
+import { OutputArea } from './OutputArea';
+import { PronunciationList } from './Pronunciations';
 
 const mockApi: Api = {
     fetchTranslation: async (word: string): Promise<GoogleTranslateResponse> => {
@@ -46,9 +48,11 @@ const meta: Meta<typeof InnerContainer> = {
             });
             return (
                 <ApiContext.Provider value={mockApi}>
-                    <StyletronProvider value={engine}>
-                        <Story />
-                    </StyletronProvider>
+                    <UIStateProvider>
+                        <StyletronProvider value={engine}>
+                            <Story />
+                        </StyletronProvider>
+                    </UIStateProvider>
                 </ApiContext.Provider>
             );
         },
@@ -82,31 +86,23 @@ const referenceElement: ReferenceElement = {
     }),
 };
 
-const word = new Word('hello');
+const word = new Word('If you\'d rather write any necessary JS yourself or want to integrate with a framework other than React or Vue, we also provide every Tailwind Ul component example as vanilla HTML that you can adapt yourself.');
 
-const WordHeader = ({ text }: { text: string }) => (
-    <h1 style={{ fontSize: '24px', fontWeight: 'bold', margin: '0 0 15px 0', padding: '15px 15px 0 15px' }}>
-        {text}
-    </h1>
-);
+const App = () => {
+    const { showPronunciations } = useUIState();
+    return (
+        <>
+            <Header />
+            <InputArea text={word.title} />
+            <OutputArea word={word} />
+            {showPronunciations && <PronunciationList word={{ 'term': word.title }} />}
+        </>
+    )
+}
 
 export const Default: Story = {
     args: {
         reference: referenceElement,
-        children: (
-            <>
-                <WordHeader text={word.title} />
-                <Tabs tabs={[
-                    {
-                        label: 'Translation',
-                        content: <Translator word={word} />
-                    },
-                    {
-                        label: 'Pronunciation',
-                        content: <PronunciationList word={{ 'term': 'hello' }} />
-                    }
-                ]} />
-            </>
-        ),
+        children: <App />,
     },
 };

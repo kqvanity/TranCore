@@ -1,5 +1,4 @@
-
-import React, { Suspense } from 'react';
+import React, { Suspense, useState } from 'react';
 import { createRoot, Root } from 'react-dom/client';
 import { type ReferenceElement } from '@floating-ui/dom';
 import { getContainer } from '.';
@@ -8,13 +7,14 @@ import { popupCardID } from './consts';
 import { Word } from '../../core/domain/entities/model';
 import { Provider as StyletronProvider } from 'styletron-react';
 import { Client as Styletron } from 'styletron-engine-atomic';
-import { PronunciationList } from './components/Pronunciations';
-import { Translator } from './components/Translator';
 import { ApiContext } from './ApiContext';
 import { fetchTranslation } from '../../core/adapter/gateways/fetch';
 import { readConfiguration } from '../../core/adapter/gateways/configurations';
 import { retrieveRecordings } from '../../core/adapter/gateways/pronunciation/forvo';
-import { Tabs } from './components/Tabs';
+import { Header } from './components/Header';
+import { InputArea } from './components/InputArea';
+import { OutputArea } from './components/OutputArea';
+import { PronunciationList } from './components/Pronunciations';
 
 // Persistent root and element for the popup
 let popupRoot: Root | null = null;
@@ -29,12 +29,6 @@ async function getOrCreatePopupCardElement(): Promise<HTMLDivElement> {
     }
     return $popupCardElement;
 }
-
-const WordHeader = ({ text }: { text: string }) => (
-    <h1 style={{ fontSize: '24px', fontWeight: 'bold', margin: '0 0 15px 0', padding: '15px 15px 0 15px' }}>
-        {text}
-    </h1>
-);
 
 export async function showPopupCard(
     reference: ReferenceElement,
@@ -53,34 +47,46 @@ export async function showPopupCard(
         popupRoot = createRoot($popupCard);
     }
 
-    popupRoot.render(
-        <React.StrictMode>
-            <GlobalSuspense>
-                <ApiContext.Provider value={{
-                    fetchTranslation,
-                    readConfiguration,
-                    retrieveRecordings,
-                }}>
-                    <InnerContainer reference={reference}>
-                        <StyletronProvider value={engine}>
-                            <WordHeader text={word.title} />
-                            <Tabs tabs={[
-                                {
-                                    label: 'Translation',
-                                    content: <Translator word={word} />
-                                },
-                                {
-                                    label: 'Pronunciation',
-                                    content: <PronunciationList word={{ 'term': word.title }} />
-                                }
-                            ]} />
-                        </StyletronProvider>
-                    </InnerContainer>
-                </ApiContext.Provider>
-            </GlobalSuspense>
-        </React.StrictMode>
-    )
+import { UIStateProvider, useUIState } from './UIStateContext';
+
+// ... (imports)
+
+    const App = () => {
+        return (
+            <React.StrictMode>
+                <GlobalSuspense>
+                    <ApiContext.Provider value={{
+                        fetchTranslation,
+                        readConfiguration,
+                        retrieveRecordings,
+                    }}>
+                        <UIStateProvider>
+                            <MainApp word={word} reference={reference} engine={engine} />
+                        </UIStateProvider>
+                    </ApiContext.Provider>
+                </GlobalSuspense>
+            </React.StrictMode>
+        )
+    }
+
+    const MainApp = ({ word, reference, engine }: { word: Word, reference: ReferenceElement, engine: any }) => {
+        const { showPronunciations } = useUIState();
+        return (
+            <InnerContainer reference={reference}>
+                <StyletronProvider value={engine}>
+                    <Header />
+                    <InputArea text={word.title} />
+                    <OutputArea word={word} />
+                    {showPronunciations && <PronunciationList word={{ 'term': word.title }} />}
+                </StyletronProvider>
+            </InnerContainer>
+        )
+    }
+
+    popupRoot.render(<App />);
 }
+
+// ... (rest of the code)
 
 export function hidePopupCard() {
     if (popupRoot && $popupCardElement) {
