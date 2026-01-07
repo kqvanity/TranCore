@@ -1,35 +1,13 @@
-// import { sendMessage } from "webext-bridge/background";
-import {GoogleTranslateResponse} from "./translation/Translation";
+import { GoogleTranslateResponse } from "./translation/Translation";
+import { sendMessage } from "./chrome-api";
 
 export const fetchData = async (message: Message): Promise<string> => {
-    return new Promise((resolve, reject) => {
-        chrome.runtime.sendMessage({remoteSiteUrl: message.remoteSiteUrl, msg: message.msg}, async (response: any) => {
-            resolve(response)
-            reject(response)
-        })
-    })
-    // const response = await sendMessage(
-    //     message.remoteSiteUrl,
-    //     {},
-    //     "background"
-    // );
-    // console.log(response)
-    // console.log(typeof response)
-    // // resturn a string promise
-    // return new Promise((resolve, reject) => {
-    //     resolve("")
-    //     reject(response)
-    // })
-    // // return response;
+    return await sendMessage({ remoteSiteUrl: message.remoteSiteUrl, msg: message.msg });
 }
 
 export const fetchTranslation = async (wordUrl: string): Promise<GoogleTranslateResponse> => {
-    return new Promise((resolve, reject) => {
-        chrome.runtime.sendMessage({remoteSiteUrl: wordUrl, msg: "word"}, async (response: string) => {
-            resolve(JSON.parse(response) as GoogleTranslateResponse)
-            reject(response)
-        })
-    })
+    const response = await sendMessage({ remoteSiteUrl: wordUrl, msg: "word" });
+    return JSON.parse(response) as GoogleTranslateResponse;
 }
 
 // TODO: That caused a problem, as the interface type isn't forced. One of the possible regressions is the inability to refactor constructs relying on that type

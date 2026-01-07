@@ -1,3 +1,5 @@
+import { getStorage } from './chrome-api';
+
 interface UserConfiguration {
     fromLanguage: string,
     toLanguage: string,
@@ -5,7 +7,7 @@ interface UserConfiguration {
 }
 
 export const readConfiguration = async (): Promise<UserConfiguration> => {
-    const data = await chrome.storage.local.get()
+    const data = await getStorage(null);
     const userConfig: UserConfiguration = {
         fromLanguage: data["language"],
         toLanguage: "en",

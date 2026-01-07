@@ -1,8 +1,9 @@
-import { fetchTranslation } from "../fetch";
 
-export async function parseGoogleTranslateResponse(word: string) {
-    const googleApi: string = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=de&tl=en&dj=1&dt=t&dt=ld&dt=qca&dt=rm&dt=bd&q=${encodeURIComponent(word)}`
-    let response: GoogleTranslateResponse = await fetchTranslation(googleApi)
+export function getGoogleTranslateUrl(word: string) {
+    return `https://translate.googleapis.com/translate_a/single?client=gtx&sl=de&tl=en&dj=1&dt=t&dt=ld&dt=qca&dt=rm&dt=bd&q=${encodeURIComponent(word)}`;
+}
+
+export function formatGoogleTranslateResponse(response: GoogleTranslateResponse) {
     let returnVal = ''
     try {
         response.dict.forEach (element => {

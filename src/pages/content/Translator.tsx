@@ -1,28 +1,25 @@
 import { useEffect, useState } from "react";
-import { parseGoogleTranslateResponse } from "./translation/Translation";
-import { useMemo } from 'react';
-import {Word} from "./model";
+import { formatGoogleTranslateResponse, getGoogleTranslateUrl } from "./translation/Translation";
+import { useApi } from "./ApiContext";
+import { Word } from "./model";
 
-type BaseThemeType = "light" | "dark"
-const useCurrentThemeType = (): BaseThemeType => {
-    return 'dark'
-}
-
-export function Translator(word: Word) {
-    
-    const [translation, setTranslation] = useState<string>("") 
+export function Translator({ word }: { word: Word }) {
+    const [translation, setTranslation] = useState<string>("");
+    const { fetchTranslation } = useApi();
 
     useEffect(() => {
         (async () => {
-            const gTranslation = await parseGoogleTranslateResponse(word.title)
-            setTranslation(gTranslation)
+            const url = getGoogleTranslateUrl(word.title);
+            const gTranslation = await fetchTranslation(url);
+            const formatted = formatGoogleTranslateResponse(gTranslation);
+            setTranslation(formatted);
         })();
-    })
+    }, [word, fetchTranslation]);
 
     return (
         <div>
-            <h2>"Translation"</h2>
+            <h2>Translation</h2>
             <p>{translation}</p>
         </div>
-    )
+    );
 }

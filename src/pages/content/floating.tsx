@@ -41,19 +41,32 @@ export async function showPopupCard(
         popupRoot = createRoot($popupCard);
     }
 
+import { ApiContext } from './ApiContext';
+import { fetchTranslation } from './fetch';
+import { readConfiguration } from './configurations';
+import { retrieveRecordings } from './pronunciation/forvo';
+
+// ... (previous code)
+
     popupRoot.render(
         <React.StrictMode>
             <GlobalSuspense>
-                <InnerContainer reference={reference}>
+                <ApiContext.Provider value={{
+                    fetchTranslation,
+                    readConfiguration,
+                    retrieveRecordings,
+                }}>
+                    <InnerContainer reference={reference}>
                         <StyletronProvider value={engine}>
-                            {/* Pass the whole word object */}
                             <Translator word={word} />
-                            <PronunciationList word={word} />
+                            <PronunciationList word={{ term: word.title }} />
                         </StyletronProvider>
                     </InnerContainer>
+                </ApiContext.Provider>
             </GlobalSuspense>
         </React.StrictMode>
     )
+// ... (rest of the code)
     // Removed direct return of root, as it's now managed persistently.
     // Logic for hiding/unmounting should be separate.
 }
