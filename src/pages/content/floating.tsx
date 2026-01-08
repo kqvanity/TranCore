@@ -1,4 +1,5 @@
-import React, { Suspense, useState } from 'react';
+
+import React, { Suspense } from 'react';
 import { createRoot, Root } from 'react-dom/client';
 import { type ReferenceElement } from '@floating-ui/dom';
 import { getContainer } from '.';
@@ -15,6 +16,10 @@ import { Header } from './components/Header';
 import { InputArea } from './components/InputArea';
 import { OutputArea } from './components/OutputArea';
 import { PronunciationList } from './components/Pronunciations';
+import { UIStateProvider, useUIState } from './UIStateContext';
+import { ViewProvider, useView } from './ViewContext';
+import { Dictionary } from './components/Dictionary';
+import MagicStickIcon from '../assets/img/magic-stick.svg';
 
 // Persistent root and element for the popup
 let popupRoot: Root | null = null;
@@ -47,37 +52,53 @@ export async function showPopupCard(
         popupRoot = createRoot($popupCard);
     }
 
-import { UIStateProvider, useUIState } from './UIStateContext';
-
-// ... (imports)
-
-    const App = () => {
-        return (
-            <React.StrictMode>
-                <GlobalSuspense>
-                    <ApiContext.Provider value={{
-                        fetchTranslation,
-                        readConfiguration,
-                        retrieveRecordings,
-                    }}>
-                        <UIStateProvider>
+    const App = () => (
+        <React.StrictMode>
+            <GlobalSuspense>
+                <ApiContext.Provider value={{
+                    fetchTranslation,
+                    readConfiguration,
+                    retrieveRecordings,
+                }}>
+                    <UIStateProvider>
+                        <ViewProvider>
                             <MainApp word={word} reference={reference} engine={engine} />
-                        </UIStateProvider>
-                    </ApiContext.Provider>
-                </GlobalSuspense>
-            </React.StrictMode>
-        )
-    }
+                        </ViewProvider>
+                    </UIStateProvider>
+                </ApiContext.Provider>
+            </GlobalSuspense>
+        </React.StrictMode>
+    );
 
     const MainApp = ({ word, reference, engine }: { word: Word, reference: ReferenceElement, engine: any }) => {
         const { showPronunciations } = useUIState();
+        const { view, setView } = useView();
+
+        const toggleView = () => {
+            setView(view === 'dictionary' ? 'translator' : 'dictionary');
+        };
+
         return (
             <InnerContainer reference={reference}>
                 <StyletronProvider value={engine}>
                     <Header />
-                    <InputArea text={word.title} />
-                    <OutputArea word={word} />
-                    {showPronunciations && <PronunciationList word={{ 'term': word.title }} />}
+                    {view === 'dictionary' ? (
+                        <>
+                            <Dictionary word={word} />
+                            {showPronunciations && <PronunciationList word={{ 'term': word.title }} />}
+                        </>
+                    ) : (
+                        <>
+                            <InputArea text={word.title} />
+                            <OutputArea word={word} />
+                            {showPronunciations && <PronunciationList word={{ 'term': word.title }} />}
+                        </>
+                    )}
+                    <div style={{ position: 'absolute', bottom: '15px', left: '15px' }}>
+                        <button onClick={toggleView} style={{ background: 'none', border: 'none', cursor: 'pointer' }}>
+                            <img src={MagicStickIcon} alt="Toggle view" style={{ width: '20px', height: '20px' }} />
+                        </button>
+                    </div>
                 </StyletronProvider>
             </InnerContainer>
         )
@@ -85,8 +106,6 @@ import { UIStateProvider, useUIState } from './UIStateContext';
 
     popupRoot.render(<App />);
 }
-
-// ... (rest of the code)
 
 export function hidePopupCard() {
     if (popupRoot && $popupCardElement) {

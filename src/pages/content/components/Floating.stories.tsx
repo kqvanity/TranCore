@@ -8,10 +8,13 @@ import { ReferenceElement } from '@floating-ui/dom';
 import { ApiContext, Api, UserConfiguration } from '../ApiContext';
 import { GoogleTranslateResponse } from '../../../core/adapter/gateways/translation/Translation';
 import { UIStateProvider, useUIState } from '../UIStateContext';
+import { ViewProvider, useView } from '../ViewContext';
 import { Header } from './Header';
 import { InputArea } from './InputArea';
 import { OutputArea } from './OutputArea';
 import { PronunciationList } from './Pronunciations';
+import { Dictionary } from './Dictionary';
+import MagicStickIcon from '../../../assets/img/magic-stick.svg';
 
 const mockApi: Api = {
     fetchTranslation: async (word: string): Promise<GoogleTranslateResponse> => {
@@ -49,9 +52,11 @@ const meta: Meta<typeof InnerContainer> = {
             return (
                 <ApiContext.Provider value={mockApi}>
                     <UIStateProvider>
-                        <StyletronProvider value={engine}>
-                            <Story />
-                        </StyletronProvider>
+                        <ViewProvider>
+                            <StyletronProvider value={engine}>
+                                <Story />
+                            </StyletronProvider>
+                        </ViewProvider>
                     </UIStateProvider>
                 </ApiContext.Provider>
             );
@@ -90,12 +95,32 @@ const word = new Word('If you\'d rather write any necessary JS yourself or want 
 
 const App = () => {
     const { showPronunciations } = useUIState();
+    const { view, setView } = useView();
+
+    const toggleView = () => {
+        setView(view === 'dictionary' ? 'translator' : 'dictionary');
+    };
+
     return (
         <>
             <Header />
-            <InputArea text={word.title} />
-            <OutputArea word={word} />
-            {showPronunciations && <PronunciationList word={{ 'term': word.title }} />}
+            {view === 'dictionary' ? (
+                <>
+                    <Dictionary word={word} />
+                    {showPronunciations && <PronunciationList word={{ 'term': word.title }} />}
+                </>
+            ) : (
+                <>
+                    <InputArea text={word.title} />
+                    <OutputArea word={word} />
+                    {showPronunciations && <PronunciationList word={{ 'term': word.title }} />}
+                </>
+            )}
+            <div style={{ position: 'absolute', bottom: '15px', left: '15px' }}>
+                <button onClick={toggleView} style={{ background: 'none', border: 'none', cursor: 'pointer' }}>
+                    <img src={MagicStickIcon} alt="Toggle view" style={{ width: '20px', height: '20px' }} />
+                </button>
+            </div>
         </>
     )
 }
