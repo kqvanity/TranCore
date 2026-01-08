@@ -1,9 +1,11 @@
-
 import React, { useEffect, useState } from 'react';
 import { createUseStyles } from 'react-jss';
 import { useApi } from '../ApiContext';
 import { Word } from '../../../core/domain/entities/model';
 import { formatGoogleTranslateResponse, getGoogleTranslateUrl } from '../../../core/adapter/gateways/translation/Translation';
+import { useUIState } from '../UIStateContext';
+import SpeakerIcon from '../../../assets/img/volume-2.svg';
+import CopyStackIcon from '../../../assets/img/copy-stack.svg';
 
 const useStyles = createUseStyles({
     outputArea: {
@@ -38,16 +40,17 @@ const useStyles = createUseStyles({
         padding: '5px',
         display: 'flex',
         alignItems: 'center',
+        '& img': {
+            width: '16px',
+            height: '16px',
+            filter: 'grayscale(100%) brightness(0.5)', // Flat and non-colorful
+        },
     },
 });
 
 interface OutputAreaProps {
     word: Word;
 }
-
-import { useUIState } from '../UIStateContext';
-
-// ... (imports)
 
 export function OutputArea({ word }: OutputAreaProps) {
     const classes = useStyles();
@@ -73,8 +76,12 @@ export function OutputArea({ word }: OutputAreaProps) {
             <div className={classes.badge}>Polished 👍</div>
             <p className={classes.text}>{translation}</p>
             <div className={classes.actions}>
-                <button className={classes.iconButton} onClick={handleTogglePronunciations}>🔊</button>
-                <button className={classes.iconButton}>📋</button>
+                <button className={classes.iconButton} onClick={handleTogglePronunciations}>
+                    <img src={SpeakerIcon} alt="Speaker" />
+                </button>
+                <button className={classes.iconButton}>
+                    <img src={CopyStackIcon} alt="Copy" />
+                </button>
             </div>
         </div>
     );
