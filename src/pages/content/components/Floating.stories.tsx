@@ -53,8 +53,9 @@ const meta: Meta<typeof InnerContainer> = {
             const engine = new Styletron({
                 prefix: `__yetone-openai-translator-styletron-`,
             });
-            const textType = args.textType || 'Random Word';
-            const text = randomTextGenerator[textType]();
+            const textGenerators = Object.values(randomTextGenerator);
+            const randomGenerator = textGenerators[Math.floor(Math.random() * textGenerators.length)];
+            const text = randomGenerator();
             const word = new Word(text);
             return (
                 <ApiContext.Provider value={mockApi}>
@@ -69,15 +70,6 @@ const meta: Meta<typeof InnerContainer> = {
             );
         },
     ],
-    argTypes: {
-        textType: {
-            control: {
-                type: 'select',
-            },
-            options: Object.keys(randomTextGenerator),
-            defaultValue: 'Random Word',
-        },
-    },
 };
 
 export default meta;
