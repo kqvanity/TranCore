@@ -15,14 +15,13 @@ import { OutputArea } from './OutputArea';
 import { PronunciationList } from './Pronunciations';
 import { Dictionary } from './Dictionary';
 import { Footer } from './Footer';
-import { faker } from '@faker-js/faker';
+// import { faker } from '@faker-js/faker'; // Remove faker import
 
 const mockApi: Api = {
     fetchTranslation: async (word: string): Promise<GoogleTranslateResponse> => {
-        // Simple mock that returns a "translation" based on the input word
         const isSingleWord = !word.includes(' ');
         return {
-            dict: isSingleWord ? [{ pos: 'noun', terms: [word] }] : [],
+            dict: isSingleWord ? [{ pos: 'noun', terms: [word, `definition of ${word}`] }] : [],
             sentences: [{ trans: `Translated: ${word}` }],
             confidence: 1,
             ld_result: { srclangs: ['en'], srclangs_confidences: [1], extended_srclangs: ['en'] },
@@ -40,10 +39,9 @@ const mockApi: Api = {
     },
 };
 
-const randomTextGenerator = {
-    'Random Word': () => faker.lorem.word(),
-    'Random Sentence': () => faker.lorem.sentence(),
-    'Random Paragraph': () => faker.lorem.paragraph(),
+const textSamples = {
+    'Single Word': 'hello',
+    'Long Sentence': 'This is a longer sentence with multiple words to test the paragraph view in the Storybook preview.',
 };
 
 const meta: Meta<typeof InnerContainer> = {
@@ -54,8 +52,9 @@ const meta: Meta<typeof InnerContainer> = {
             const engine = new Styletron({
                 prefix: `__yetone-openai-translator-styletron-`,
             });
-            const textType = args.textType || 'Random Word';
-            const text = randomTextGenerator[textType]();
+            console.log('args.textType:', args.textType);
+            const textType = args.textType || 'Single Word';
+            const text = textSamples[textType];
             const word = new Word(text);
             return (
                 <ApiContext.Provider value={mockApi}>
@@ -75,8 +74,8 @@ const meta: Meta<typeof InnerContainer> = {
             control: {
                 type: 'select',
             },
-            options: Object.keys(randomTextGenerator),
-            defaultValue: 'Random Word',
+            options: Object.keys(textSamples),
+            defaultValue: 'Single Word',
         },
     },
 };
