@@ -1,16 +1,20 @@
+
 import React, { useEffect, useState } from 'react';
 import { createUseStyles } from 'react-jss';
 import { useApi } from '../ApiContext';
 import { Word } from '../../../core/domain/entities/model';
 import { formatGoogleTranslateResponse, getGoogleTranslateUrl } from '../../../core/adapter/gateways/translation/Translation';
 import { useUIState } from '../UIStateContext';
+import { useView } from '../ViewContext';
 import SpeakerIcon from '../../../assets/img/volume-2.svg';
 import CopyStackIcon from '../../../assets/img/copy-stack.svg';
+import MagicStickIcon from '../../../assets/img/magic-stick.svg';
 
 const useStyles = createUseStyles({
     outputArea: {
         padding: '15px',
         position: 'relative',
+        flex: 1,
     },
     badge: {
         background: '#f0f0f0',
@@ -43,7 +47,7 @@ const useStyles = createUseStyles({
         '& img': {
             width: '16px',
             height: '16px',
-            filter: 'grayscale(100%) brightness(0.5)', // Flat and non-colorful
+            filter: 'grayscale(100%) brightness(0.5)',
         },
     },
 });
@@ -57,6 +61,7 @@ export function OutputArea({ word }: OutputAreaProps) {
     const [translation, setTranslation] = useState<string>('');
     const { fetchTranslation } = useApi();
     const { showPronunciations, setShowPronunciations } = useUIState();
+    const { view, setView } = useView();
 
     useEffect(() => {
         (async () => {
@@ -71,6 +76,10 @@ export function OutputArea({ word }: OutputAreaProps) {
         setShowPronunciations(!showPronunciations);
     };
 
+    const toggleView = () => {
+        setView(view === 'dictionary' ? 'translator' : 'dictionary');
+    };
+
     return (
         <div className={classes.outputArea}>
             <div className={classes.badge}>Polished 👍</div>
@@ -81,6 +90,9 @@ export function OutputArea({ word }: OutputAreaProps) {
                 </button>
                 <button className={classes.iconButton}>
                     <img src={CopyStackIcon} alt="Copy" />
+                </button>
+                <button className={classes.iconButton} onClick={toggleView}>
+                    <img src={MagicStickIcon} alt="Toggle view" />
                 </button>
             </div>
         </div>

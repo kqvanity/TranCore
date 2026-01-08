@@ -19,7 +19,7 @@ import { PronunciationList } from './components/Pronunciations';
 import { UIStateProvider, useUIState } from './UIStateContext';
 import { ViewProvider, useView } from './ViewContext';
 import { Dictionary } from './components/Dictionary';
-import MagicStickIcon from '../assets/img/magic-stick.svg';
+
 
 // Persistent root and element for the popup
 let popupRoot: Root | null = null;
@@ -94,11 +94,7 @@ export async function showPopupCard(
                             {showPronunciations && <PronunciationList word={{ 'term': word.title }} />}
                         </>
                     )}
-                    <div style={{ position: 'absolute', bottom: '15px', left: '15px' }}>
-                        <button onClick={toggleView} style={{ background: 'none', border: 'none', cursor: 'pointer' }}>
-                            <img src={MagicStickIcon} alt="Toggle view" style={{ width: '20px', height: '20px' }} />
-                        </button>
-                    </div>
+
                 </StyletronProvider>
             </InnerContainer>
         )

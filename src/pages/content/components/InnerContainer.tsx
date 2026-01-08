@@ -56,6 +56,8 @@ const useStyles = createUseStyles({
     content: {
         overflow: 'scroll',
         flex: 1,
+        display: 'flex',
+        flexDirection: 'column',
     }
 });
 

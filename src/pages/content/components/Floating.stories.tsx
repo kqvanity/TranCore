@@ -14,7 +14,7 @@ import { InputArea } from './InputArea';
 import { OutputArea } from './OutputArea';
 import { PronunciationList } from './Pronunciations';
 import { Dictionary } from './Dictionary';
-import MagicStickIcon from '../../../assets/img/magic-stick.svg';
+
 
 const mockApi: Api = {
     fetchTranslation: async (word: string): Promise<GoogleTranslateResponse> => {
@@ -116,11 +116,7 @@ const App = () => {
                     {showPronunciations && <PronunciationList word={{ 'term': word.title }} />}
                 </>
             )}
-            <div style={{ position: 'absolute', bottom: '15px', left: '15px' }}>
-                <button onClick={toggleView} style={{ background: 'none', border: 'none', cursor: 'pointer' }}>
-                    <img src={MagicStickIcon} alt="Toggle view" style={{ width: '20px', height: '20px' }} />
-                </button>
-            </div>
+
         </>
     )
 }
