@@ -14,13 +14,15 @@ import { InputArea } from './InputArea';
 import { OutputArea } from './OutputArea';
 import { PronunciationList } from './Pronunciations';
 import { Dictionary } from './Dictionary';
-
+import { Footer } from './Footer';
+import { faker } from '@faker-js/faker';
 
 const mockApi: Api = {
     fetchTranslation: async (word: string): Promise<GoogleTranslateResponse> => {
+        // Simple mock that returns a fake translation
         return {
-            dict: [{ pos: 'noun', terms: ['hello', 'greeting'] }],
-            sentences: [{ trans: 'Hello' }],
+            dict: [{ pos: 'noun', terms: [faker.lorem.word()] }],
+            sentences: [{ trans: faker.lorem.sentence() }],
             confidence: 1,
             ld_result: { srclangs: ['en'], srclangs_confidences: [1], extended_srclangs: ['en'] },
             src: 'en',
@@ -28,33 +30,38 @@ const mockApi: Api = {
         };
     },
     readConfiguration: async (): Promise<UserConfiguration> => {
-        return {
-            fromLanguage: 'en',
-            toLanguage: 'de',
-            key: 'test-api-key',
-        };
+        return { fromLanguage: 'en', toLanguage: 'de', key: 'test-api-key' };
     },
     retrieveRecordings: async (word: string, langCode: string): Promise<Pronunciation[]> => {
         return [
-            new Pronunciation('hello', 'https://audio.forvo.com/mp3/1.mp3', ['noun'], undefined),
+            new Pronunciation(word, 'https://audio.forvo.com/mp3/1.mp3', ['noun'], undefined),
         ];
     },
+};
+
+const randomTextGenerator = {
+    'Random Word': () => faker.lorem.word(),
+    'Random Sentence': () => faker.lorem.sentence(),
+    'Random Paragraph': () => faker.lorem.paragraph(),
 };
 
 const meta: Meta<typeof InnerContainer> = {
     title: 'Content/FloatingUI',
     component: InnerContainer,
     decorators: [
-        (Story) => {
+        (Story, { args }) => {
             const engine = new Styletron({
                 prefix: `__yetone-openai-translator-styletron-`,
             });
+            const textType = args.textType || 'Random Word';
+            const text = randomTextGenerator[textType]();
+            const word = new Word(text);
             return (
                 <ApiContext.Provider value={mockApi}>
                     <UIStateProvider>
                         <ViewProvider>
                             <StyletronProvider value={engine}>
-                                <Story />
+                                <Story args={{ ...args, word }} />
                             </StyletronProvider>
                         </ViewProvider>
                     </UIStateProvider>
@@ -62,11 +69,20 @@ const meta: Meta<typeof InnerContainer> = {
             );
         },
     ],
+    argTypes: {
+        textType: {
+            control: {
+                type: 'select',
+            },
+            options: Object.keys(randomTextGenerator),
+            defaultValue: 'Random Word',
+        },
+    },
 };
 
 export default meta;
 
-type Story = StoryObj<typeof InnerContainer>;
+type Story = StoryObj<typeof InnerContainer & { word: Word }>;
 
 const referenceElement: ReferenceElement = {
     getBoundingClientRect: () => ({
@@ -78,28 +94,13 @@ const referenceElement: ReferenceElement = {
         left: 100,
         right: 200,
         bottom: 120,
-        toJSON: () => ({
-            width: 100,
-            height: 20,
-            x: 100,
-            y: 100,
-            top: 100,
-            left: 100,
-            right: 200,
-            bottom: 120,
-        })
+        toJSON: () => ({ width: 100, height: 20, x: 100, y: 100, top: 100, left: 100, right: 200, bottom: 120 }),
     }),
 };
 
-const word = new Word('If you\'d rather write any necessary JS yourself or want to integrate with a framework other than React or Vue, we also provide every Tailwind Ul component example as vanilla HTML that you can adapt yourself.');
-
-import { Footer } from './Footer';
-
-// ... (previous code)
-
-const App = () => {
+const App = ({ word }: { word: Word }) => {
     const { showPronunciations } = useUIState();
-    const { view, setView } = useView();
+    const { view } = useView();
 
     return (
         <>
@@ -118,12 +119,12 @@ const App = () => {
             )}
             <Footer />
         </>
-    )
-}
+    );
+};
 
 export const Default: Story = {
     args: {
         reference: referenceElement,
-        children: <App />,
     },
+    render: (args) => <InnerContainer {...args}><App word={args.word} /></InnerContainer>,
 };
