@@ -10,8 +10,18 @@ interface ViewState {
 
 const ViewContext = createContext<ViewState | null>(null);
 
-export function ViewProvider({ children }: { children: React.ReactNode }) {
-    const [view, setView] = useState<View>('dictionary');
+import { Word } from '../../core/domain/entities/model';
+
+// ... (imports)
+
+interface ViewProviderProps {
+    children: React.ReactNode;
+    word: Word;
+}
+
+export function ViewProvider({ children, word }: ViewProviderProps) {
+    const isSingleWord = !word.title.includes(' ');
+    const [view, setView] = useState<View>(isSingleWord ? 'dictionary' : 'translator');
 
     return (
         <ViewContext.Provider value={{ view, setView }}>
@@ -19,6 +29,7 @@ export function ViewProvider({ children }: { children: React.ReactNode }) {
         </ViewContext.Provider>
     );
 }
+// ... (useView hook)
 
 export function useView() {
     const context = useContext(ViewContext);

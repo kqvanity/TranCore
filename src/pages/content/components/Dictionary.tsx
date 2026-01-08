@@ -34,8 +34,7 @@ export function Dictionary({ word }: DictionaryProps) {
 
     useEffect(() => {
         (async () => {
-            const url = getGoogleTranslateUrl(word.title);
-            const gTranslation: GoogleTranslateResponse = await fetchTranslation(url);
+            const gTranslation: GoogleTranslateResponse = await fetchTranslation(word.title);
             const defs = gTranslation.dict?.map(d => ({ pos: d.pos, terms: d.terms })) || [];
             setDefinitions(defs);
         })();

@@ -1,11 +1,12 @@
-import { GoogleTranslateResponse } from "./translation/Translation";
+import { GoogleTranslateResponse, getGoogleTranslateUrl } from "./translation/Translation";
 import { sendMessage } from "./chrome-api";
 
 export const fetchData = async (message: Message): Promise<string> => {
     return await sendMessage({ remoteSiteUrl: message.remoteSiteUrl, msg: message.msg });
 }
 
-export const fetchTranslation = async (wordUrl: string): Promise<GoogleTranslateResponse> => {
+export const fetchTranslation = async (word: string): Promise<GoogleTranslateResponse> => {
+    const wordUrl = getGoogleTranslateUrl(word);
     const response = await sendMessage({ remoteSiteUrl: wordUrl, msg: "word" });
     return JSON.parse(response) as GoogleTranslateResponse;
 }

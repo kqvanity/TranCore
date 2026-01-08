@@ -39,8 +39,7 @@ export function OutputArea({ word }: OutputAreaProps) {
 
     useEffect(() => {
         (async () => {
-            const url = getGoogleTranslateUrl(word.title);
-            const gTranslation = await fetchTranslation(url);
+            const gTranslation = await fetchTranslation(word.title);
             const formatted = formatGoogleTranslateResponse(gTranslation);
             setTranslation(formatted);
         })();

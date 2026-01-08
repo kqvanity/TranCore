@@ -1,4 +1,3 @@
-
 import React, { Suspense } from 'react';
 import { createRoot, Root } from 'react-dom/client';
 import { type ReferenceElement } from '@floating-ui/dom';
@@ -19,7 +18,7 @@ import { PronunciationList } from './components/Pronunciations';
 import { UIStateProvider, useUIState } from './UIStateContext';
 import { ViewProvider, useView } from './ViewContext';
 import { Dictionary } from './components/Dictionary';
-
+import { Footer } from './components/Footer';
 
 // Persistent root and element for the popup
 let popupRoot: Root | null = null;
@@ -61,7 +60,7 @@ export async function showPopupCard(
                     retrieveRecordings,
                 }}>
                     <UIStateProvider>
-                        <ViewProvider>
+                        <ViewProvider word={word}>
                             <MainApp word={word} reference={reference} engine={engine} />
                         </ViewProvider>
                     </UIStateProvider>
@@ -70,13 +69,9 @@ export async function showPopupCard(
         </React.StrictMode>
     );
 
-import { Footer } from './components/Footer';
-
-// ... (previous code)
-
     const MainApp = ({ word, reference, engine }: { word: Word, reference: ReferenceElement, engine: any }) => {
         const { showPronunciations } = useUIState();
-        const { view, setView } = useView();
+        const { view } = useView();
 
         return (
             <InnerContainer reference={reference}>
@@ -99,7 +94,6 @@ import { Footer } from './components/Footer';
             </InnerContainer>
         )
     }
-
 
     popupRoot.render(<App />);
 }

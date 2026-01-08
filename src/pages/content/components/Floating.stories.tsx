@@ -19,10 +19,11 @@ import { faker } from '@faker-js/faker';
 
 const mockApi: Api = {
     fetchTranslation: async (word: string): Promise<GoogleTranslateResponse> => {
-        // Simple mock that returns a fake translation
+        // Simple mock that returns a "translation" based on the input word
+        const isSingleWord = !word.includes(' ');
         return {
-            dict: [{ pos: 'noun', terms: [faker.lorem.word()] }],
-            sentences: [{ trans: faker.lorem.sentence() }],
+            dict: isSingleWord ? [{ pos: 'noun', terms: [word] }] : [],
+            sentences: [{ trans: `Translated: ${word}` }],
             confidence: 1,
             ld_result: { srclangs: ['en'], srclangs_confidences: [1], extended_srclangs: ['en'] },
             src: 'en',
@@ -53,14 +54,13 @@ const meta: Meta<typeof InnerContainer> = {
             const engine = new Styletron({
                 prefix: `__yetone-openai-translator-styletron-`,
             });
-            const textGenerators = Object.values(randomTextGenerator);
-            const randomGenerator = textGenerators[Math.floor(Math.random() * textGenerators.length)];
-            const text = randomGenerator();
+            const textType = args.textType || 'Random Word';
+            const text = randomTextGenerator[textType]();
             const word = new Word(text);
             return (
                 <ApiContext.Provider value={mockApi}>
                     <UIStateProvider>
-                        <ViewProvider>
+                        <ViewProvider word={word}>
                             <StyletronProvider value={engine}>
                                 <Story args={{ ...args, word }} />
                             </StyletronProvider>
@@ -70,6 +70,15 @@ const meta: Meta<typeof InnerContainer> = {
             );
         },
     ],
+    argTypes: {
+        textType: {
+            control: {
+                type: 'select',
+            },
+            options: Object.keys(randomTextGenerator),
+            defaultValue: 'Random Word',
+        },
+    },
 };
 
 export default meta;
