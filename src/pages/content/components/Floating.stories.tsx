@@ -93,13 +93,13 @@ const referenceElement: ReferenceElement = {
 
 const word = new Word('If you\'d rather write any necessary JS yourself or want to integrate with a framework other than React or Vue, we also provide every Tailwind Ul component example as vanilla HTML that you can adapt yourself.');
 
+import { Footer } from './Footer';
+
+// ... (previous code)
+
 const App = () => {
     const { showPronunciations } = useUIState();
     const { view, setView } = useView();
-
-    const toggleView = () => {
-        setView(view === 'dictionary' ? 'translator' : 'dictionary');
-    };
 
     return (
         <>
@@ -116,7 +116,7 @@ const App = () => {
                     {showPronunciations && <PronunciationList word={{ 'term': word.title }} />}
                 </>
             )}
-
+            <Footer />
         </>
     )
 }

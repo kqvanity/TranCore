@@ -70,13 +70,13 @@ export async function showPopupCard(
         </React.StrictMode>
     );
 
+import { Footer } from './components/Footer';
+
+// ... (previous code)
+
     const MainApp = ({ word, reference, engine }: { word: Word, reference: ReferenceElement, engine: any }) => {
         const { showPronunciations } = useUIState();
         const { view, setView } = useView();
-
-        const toggleView = () => {
-            setView(view === 'dictionary' ? 'translator' : 'dictionary');
-        };
 
         return (
             <InnerContainer reference={reference}>
@@ -94,11 +94,12 @@ export async function showPopupCard(
                             {showPronunciations && <PronunciationList word={{ 'term': word.title }} />}
                         </>
                     )}
-
+                    <Footer />
                 </StyletronProvider>
             </InnerContainer>
         )
     }
+
 
     popupRoot.render(<App />);
 }
