@@ -1,10 +1,10 @@
 import Fuse from 'fuse.js';
-import { readConfiguration } from "./configurations";
-import { Pronunciation, Word } from './model';
+import { readConfiguration } from "../../core/adapter/gateways/configurations";
+import { Pronunciation, Word } from '../../core/domain/entities/model';
 import { containerID, popupCardID, popupCardOffset, popupThumbID, zIndex } from './consts'
 import { attachEventsToContainer } from "./utils";
 import { showPopupCard } from "./floating";
-import { retrieveRecordings } from "./pronunciation/forvo";
+import { retrieveRecordings } from "../../core/adapter/gateways/pronunciation/forvo";
 import {Root} from "react-dom/client";
 
 let root: Root | null = null
