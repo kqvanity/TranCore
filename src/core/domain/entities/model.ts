@@ -8,9 +8,9 @@ export class Word {
 export class Pronunciation {
   title: string;
   url: string;
-  tags: [string] | undefined;
+  tags: string[] | undefined;
   translation: Translation | undefined;
-  constructor(title: string, url: string, tags: [string] | undefined, translation: Translation | undefined) {
+  constructor(title: string, url: string, tags: string[] | undefined, translation: Translation | undefined) {
     this.title = title;
     this.url = url;
     this.tags = tags
