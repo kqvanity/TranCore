@@ -1,5 +1,5 @@
 
-import { PropsWithChildren, useRef } from 'react';
+import { PropsWithChildren, useRef, useState } from 'react';
 import Draggable from 'react-draggable';
 import {
     dragRegionSelector,
@@ -64,16 +64,17 @@ const useStyles = createUseStyles({
 export default function InnerContainer({ children, reference }: Props) {
     const styles = useStyles();
     const draggableRef = useRef<HTMLDivElement | null>(null);
+    const [position, setPosition] = useState<{ x: number, y: number } | null>(null);
 
-    const { draggedRef, position, handleOnDrag } = useDraggable();
-    useFloatingPosition(reference, draggableRef, draggedRef);
+    const { draggedRef, handleOnDrag } = useDraggable(setPosition);
+    useFloatingPosition(reference, draggableRef, draggedRef, setPosition);
 
     return (
         <Draggable
             nodeRef={draggableRef}
             handle={dragRegionSelector}
             bounds="html"
-            position={position}
+            position={position ?? undefined}
             onDrag={handleOnDrag}
         >
             <div ref={draggableRef} className={styles.container} id={popupCardInnerContainerId}>

@@ -10,7 +10,8 @@ import {
 export function useFloatingPosition(
     reference: ReferenceElement,
     draggableRef: RefObject<HTMLDivElement>,
-    draggedRef: RefObject<boolean>
+    draggedRef: RefObject<boolean>,
+    setPosition: (pos: { x: number, y: number }) => void
 ) {
     const updatePosition = useCallback(async () => {
         if (!draggableRef.current) {
@@ -34,13 +35,10 @@ export function useFloatingPosition(
             strategy: 'fixed',
         });
 
-        if (draggableRef.current) {
-            Object.assign(draggableRef.current.style, {
-                left: `${Math.max(documentPadding, x)}px`,
-                top: `${Math.max(documentPadding, y)}px`,
-            });
+        if (draggableRef.current && !draggedRef.current) {
+            setPosition({ x: Math.max(documentPadding, x), y: Math.max(documentPadding, y) });
         }
-    }, [reference, draggableRef]);
+    }, [reference, draggableRef, setPosition, draggedRef]);
 
     useEffect(() => {
         if (!draggableRef.current) {
@@ -56,6 +54,10 @@ export function useFloatingPosition(
             resizeObserver.disconnect();
         };
     }, [draggedRef, updatePosition, draggableRef]);
+
+    useEffect(() => {
+        updatePosition();
+    }, [updatePosition]);
 
     return { updatePosition };
 }

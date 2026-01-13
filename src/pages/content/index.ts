@@ -1,13 +1,10 @@
 import Fuse from 'fuse.js';
 import { readConfiguration } from "../../core/adapter/gateways/configurations";
 import { Pronunciation, Word } from '../../core/domain/entities/model';
-import { containerID, popupCardID, popupCardOffset, popupThumbID, zIndex } from './consts'
-import { attachEventsToContainer } from "./utils";
-import { showPopupCard } from "./floating";
+import { containerID, popupCardOffset } from './consts'
+import { showPopupCard, hidePopupCard } from "./floating";
 import { retrieveRecordings } from "../../core/adapter/gateways/pronunciation/forvo";
-import {Root} from "react-dom/client";
-
-let root: Root | null = null
+import { getContainer } from "./container";
 
 export const loadPronunciations = async (word: string): Promise<Pronunciation[]> => {
     let userConfiguration = await readConfiguration()
@@ -23,82 +20,18 @@ export const loadPronunciations = async (word: string): Promise<Pronunciation[]>
     return recordings
 }
 
-export async function getContainer(): Promise<HTMLElement> {
-    // Create the parent container [Rectangular container] if it's ot already existent
-    let $container: HTMLElement | null = document.getElementById(containerID)
-    if (!$container) {
-        $container = document.createElement('div')
-        $container.id = containerID
-
-        // todo:
-        attachEventsToContainer($container)
-        $container.style.zIndex = zIndex
-
-        return new Promise((resolve, reject) => {
-            setTimeout(() => {
-                const $container_: HTMLElement | null = document.getElementById(containerID)
-                if ($container_) {
-                    resolve($container_)
-                    return
-                }
-                if (!$container) {
-                    reject(new Error('Failed to create container'))
-                    return
-                }
-                const shadowRoot = $container.attachShadow({ mode: 'open' })
-                const $inner = document.createElement('div')
-                shadowRoot.appendChild($inner)
-                const $html = document.body.parentElement
-                if ($html) {
-                    $html.appendChild($container as HTMLElement)
-                } else {
-                    document.appendChild($container as HTMLElement)
-                }
-                resolve($container)
-            }, 100)
-        })
-    }
-    return new Promise((resolve) => {
-        resolve($container as HTMLElement)
-    })
-}
-
-
-export async function queryPopupCardElement(): Promise<HTMLElement | null> {
-    const $container = await getContainer()
-    return $container.shadowRoot?.querySelector(`#${popupCardID}`) as HTMLDivElement | null
-}
-
-async function hidePopupCard() {
-    const $popupCard: HTMLElement | null = await queryPopupCardElement()
-
-    if (!$popupCard) {
-        return
-    }
-    console.log("Unmounting root - before", root)
-    if (root) {
-        console.log("Unmounting root - after", root)
-        root.unmount()
-        root = null
-    }
-    console.log("Unmounting root - after all", root)
-    removeContainer()
-
-    // $popupCard.remove()
-}
-
-async function removeContainer() {
-    const $container = await getContainer()
-    $container.remove()
-}
-
 const mouseDownHandler = async (event: MouseEvent) => {
-    // mousedownTarget = event.target
-    // const settings = await utils.getSettings()
-    // hidePopupThumb()
-    // if (!settings.pinned) {
-        hidePopupCard()
-    // }
+    const $container = document.getElementById(containerID);
+    if (!$container) {
+        return;
+    }
+
+    const path = event.composedPath();
+    if (path.includes($container)) {
+        return;
+    }
+
+    hidePopupCard();
 }
 document.addEventListener('mousedown', mouseDownHandler)
 
@@ -111,49 +44,28 @@ export const getClientY = (event: MouseEvent) => {
 }
 
 const mouseUpHandler = async (event: MouseEvent) => {
-// const mouseUpHandler = async (event: UserEventType) => {
-    // lastMouseEvent = event
-    // const settings = await utils.getSettings()
-    const autoTranslate = true
-    const alwaysShowIcons = true
-
-    let mousedownTarget = event.target
-
-    if (
-        mousedownTarget instanceof HTMLElement
-    )
-
-    // if (
-    //     (mousedownTarget instanceof HTMLInputElement || mousedownTarget instanceof HTMLTextAreaElement)
-    //     && settings.selectInputElementsText === false
-    // ) {
-    //     return
-    // }
+    const autoTranslate = true;
 
     window.setTimeout(async () => {
-        const sel = window.getSelection()
-        let text = (sel?.toString() ?? '').trim()
+        const sel = window.getSelection();
+        let text = (sel?.toString() ?? '').trim();
         if (!text) {
             if (event.target instanceof HTMLInputElement || event.target instanceof HTMLTextAreaElement) {
-                const elem = event.target
-                text = elem.value.substring(elem.selectionStart ?? 0, elem.selectionEnd ?? 0).trim()
+                const elem = event.target;
+                text = elem.value.substring(elem.selectionStart ?? 0, elem.selectionEnd ?? 0).trim();
             }
         } else {
-            // if (settings.autoTranslate === true) {
             if (autoTranslate === true) {
-                const x = getClientX(event)
-                const y = getClientY(event)
-                root = await showPopupCard(
+                const x = getClientX(event);
+                const y = getClientY(event);
+                await showPopupCard(
                     { getBoundingClientRect: () => new DOMRect(x, y, popupCardOffset, popupCardOffset) },
                     new Word(text),
                     true
-                )
+                );
             }
-            // else if (alwaysShowIcons === true && getCaretNodeType(event) === Node.TEXT_NODE) {
-            //     showPopupThumb(text, getPageX(event) + popupCardOffset, getPageY(event) + popupCardOffset)
-            // }
         }
-    })
+    });
 }
 
 document.addEventListener('mouseup', mouseUpHandler)

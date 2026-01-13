@@ -1,10 +1,9 @@
 
-import { useRef, useState } from 'react';
+import { useRef } from 'react';
 import { DraggableData, DraggableEvent } from 'react-draggable';
 
-export function useDraggable() {
+export function useDraggable(setPosition: (pos: { x: number, y: number }) => void) {
     const draggedRef = useRef(false);
-    const [position, setPosition] = useState({ x: 0, y: 0 });
 
     function handleOnDrag(event: DraggableEvent, data: DraggableData) {
         draggedRef.current = true;
@@ -13,7 +12,6 @@ export function useDraggable() {
 
     return {
         draggedRef,
-        position,
         handleOnDrag,
     };
 }
