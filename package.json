@@ -6,6 +6,7 @@
     "develop": "vite",
     "build": "vite build",
     "watch": "vite build --watch",
+    "build:firefox": "vite build && node scripts/build-zip.js",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
     "test": "jest"
@@ -59,7 +60,8 @@
     "vite": "^7.3.0",
     "vite-plugin-web-extension": "^4.5.0",
     "vite-tsconfig-paths": "^6.0.3",
-    "vitest": "^4.0.16"
+    "vitest": "^4.0.16",
+    "zip-a-folder": "^4.0.4"
   },
   "resolutions": {
     "webpack": "5"
