@@ -41,7 +41,13 @@ export function InputArea({ text }: InputAreaProps) {
                                     backgroundColor: 'rgba(255, 220, 100, 0.3)',
                                 },
                             })}
-                            onClick={() => setSelectedWord(word)}
+                            onClick={() => {
+                                if (word === selectedWord) {
+                                    setSelectedWord(text); // Revert to original full sentence
+                                } else {
+                                    setSelectedWord(word);
+                                }
+                            }}
                         >
                             {word}
                         </span>
