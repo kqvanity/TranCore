@@ -6,10 +6,14 @@ import MagicStickIcon from '../../../assets/img/magic-stick.svg';
 
 export function Footer() {
     const [css] = useStyletron();
-    const { view, setView } = useView();
+    const { view, setView, translation } = useView();
 
     const toggleView = () => {
         setView(view === 'dictionary' ? 'translator' : 'dictionary');
+    };
+
+    const handleCopy = () => {
+        navigator.clipboard.writeText(translation);
     };
 
     const iconButton = css({
@@ -35,11 +39,11 @@ export function Footer() {
             className={css({
                 display: 'flex',
                 justifyContent: 'flex-end',
-                padding: '5px 15px',
+                padding: '2px 15px',
                 borderTop: '1px solid #e0e0e0',
             })}
         >
-            <button className={iconButton}>
+            <button className={iconButton} onClick={handleCopy}>
                 <img src={CopyStackIcon} alt="Copy" className={iconImg} />
             </button>
             <button className={iconButton} onClick={toggleView}>

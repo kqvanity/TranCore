@@ -6,6 +6,8 @@ export type View = 'dictionary' | 'translator';
 interface ViewState {
     view: View;
     setView: (view: View) => void;
+    translation: string;
+    setTranslation: (translation: string) => void;
 }
 
 const ViewContext = createContext<ViewState | null>(null);
@@ -22,9 +24,10 @@ interface ViewProviderProps {
 export function ViewProvider({ children, word }: ViewProviderProps) {
     const isSingleWord = !word.title.includes(' ');
     const [view, setView] = useState<View>(isSingleWord ? 'dictionary' : 'translator');
+    const [translation, setTranslation] = useState<string>('');
 
     return (
-        <ViewContext.Provider value={{ view, setView }}>
+        <ViewContext.Provider value={{ view, setView, translation, setTranslation }}>
             {children}
         </ViewContext.Provider>
     );

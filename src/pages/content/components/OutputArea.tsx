@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { useStyletron } from 'styletron-react';
 import { useApi } from '../ApiContext';
 import { Word } from '../../../core/domain/entities/model';
 import { formatGoogleTranslateResponse } from '../../../core/adapter/gateways/translation/Translation';
+import { useView } from '../ViewContext';
 
 interface OutputAreaProps {
     word: Word;
@@ -10,8 +11,8 @@ interface OutputAreaProps {
 
 export function OutputArea({ word }: OutputAreaProps) {
     const [css] = useStyletron();
-    const [translation, setTranslation] = useState<string>('');
     const { fetchTranslation } = useApi();
+    const { translation, setTranslation } = useView();
 
     useEffect(() => {
         (async () => {
@@ -19,7 +20,7 @@ export function OutputArea({ word }: OutputAreaProps) {
             const formatted = formatGoogleTranslateResponse(gTranslation);
             setTranslation(formatted);
         })();
-    }, [word, fetchTranslation]);
+    }, [word, fetchTranslation, setTranslation]);
 
     return (
         <div

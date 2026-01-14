@@ -55,7 +55,6 @@ export default function InnerContainer({ children, reference }: Props) {
                     color: '#333',
                     font: '14px/1.6 -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica Neue,Arial,sans-serif,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol,Noto Color Emoji',
                     width: `${popupCardMinWidth}px`,
-                    height: `${popupCardMinHeight}px`,
                     overflow: 'hidden',
                     background: 'floralwhite',
                     display: 'flex',
@@ -76,7 +75,6 @@ export default function InnerContainer({ children, reference }: Props) {
                 />
                 <div
                     className={css({
-                        flex: 1,
                         display: 'flex',
                         flexDirection: 'column',
                     })}
