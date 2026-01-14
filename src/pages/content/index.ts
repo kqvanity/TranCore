@@ -21,6 +21,7 @@ export const loadPronunciations = async (word: string): Promise<Pronunciation[]>
 }
 
 const mouseDownHandler = async (event: MouseEvent) => {
+    console.log('[TranCore] Mouse down event fired.');
     const $container = document.getElementById(containerID);
     if (!$container) {
         return;
@@ -44,6 +45,7 @@ export const getClientY = (event: MouseEvent) => {
 }
 
 const mouseUpHandler = async (event: MouseEvent) => {
+    console.log('[TranCore] Mouse up event fired.');
     const autoTranslate = true;
 
     window.setTimeout(async () => {
@@ -56,8 +58,10 @@ const mouseUpHandler = async (event: MouseEvent) => {
             }
         } else {
             if (autoTranslate === true) {
+                console.log('[TranCore] Text selected: ', text);
                 const x = getClientX(event);
                 const y = getClientY(event);
+                console.log('[TranCore] Showing popup card.');
                 await showPopupCard(
                     { getBoundingClientRect: () => new DOMRect(x, y, popupCardOffset, popupCardOffset) },
                     new Word(text),

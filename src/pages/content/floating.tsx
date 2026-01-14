@@ -19,9 +19,6 @@ import { UIStateProvider, useUIState } from './UIStateContext';
 import { ViewProvider, useView } from './ViewContext';
 import { Dictionary } from './components/Dictionary';
 import { Footer } from './components/Footer';
-import { JssProvider, createGenerateId } from 'react-jss';
-import { create } from 'jss';
-import jssPreset from 'jss-preset-default';
 
 // Persistent root and element for the popup
 let popupRoot: Root | null = null;
@@ -29,6 +26,7 @@ let $popupCardElement: HTMLDivElement | null = null;
 
 async function getOrCreatePopupCardElement(): Promise<HTMLDivElement> {
     if (!$popupCardElement) {
+        console.log('[TranCore] getOrCreatePopupCardElement: creating and appending popup card element');
         $popupCardElement = document.createElement('div');
         $popupCardElement.id = popupCardID;
         const $container = await getContainer();
@@ -42,17 +40,11 @@ export async function showPopupCard(
     word: Word,
     autoFocus: boolean | undefined = false
 ) {
+    console.log('[TranCore] showPopupCard: creating or getting popup card element');
     const $popupCard = await getOrCreatePopupCardElement();
 
+    console.log('[TranCore] showPopupCard: creating Styletron instance');
     const insertionPointContainer = $popupCard.parentElement;
-    const jss = create(jssPreset());
-    if (insertionPointContainer) {
-        const commentNode = document.createComment('jss-insertion-point');
-        insertionPointContainer.appendChild(commentNode);
-        jss.setup({ insertionPoint: commentNode });
-    }
-    const generateId = createGenerateId();
-
 
     const PREFIX = '__yetone-openai-translator'
     const engine = new Styletron({
@@ -61,27 +53,26 @@ export async function showPopupCard(
     })
 
     if (!popupRoot) {
+        console.log('[TranCore] showPopupCard: creating React root');
         popupRoot = createRoot($popupCard);
     }
 
     const App = () => (
-        <JssProvider jss={jss} generateId={generateId}>
-            <React.StrictMode>
-                <GlobalSuspense>
-                    <ApiContext.Provider value={{
-                        fetchTranslation,
-                        readConfiguration,
-                        retrieveRecordings,
-                    }}>
-                        <UIStateProvider>
-                            <ViewProvider word={word}>
-                                <MainApp word={word} reference={reference} engine={engine} />
-                            </ViewProvider>
-                        </UIStateProvider>
-                    </ApiContext.Provider>
-                </GlobalSuspense>
-            </React.StrictMode>
-        </JssProvider>
+        <React.StrictMode>
+            <GlobalSuspense>
+                <ApiContext.Provider value={{
+                    fetchTranslation,
+                    readConfiguration,
+                    retrieveRecordings,
+                }}>
+                    <UIStateProvider>
+                        <ViewProvider word={word}>
+                            <MainApp word={word} reference={reference} engine={engine} />
+                        </ViewProvider>
+                    </UIStateProvider>
+                </ApiContext.Provider>
+            </GlobalSuspense>
+        </React.StrictMode>
     );
 
     const MainApp = ({ word, reference, engine }: { word: Word, reference: ReferenceElement, engine: any }) => {
@@ -110,16 +101,13 @@ export async function showPopupCard(
         )
     }
 
-    try {
-        console.log('[TranCore] showPopupCard: rendering app');
-        popupRoot.render(<App />);
-        console.log('[TranCore] showPopupCard: rendering app successful');
-    } catch (e) {
-        console.error('[TranCore] Error rendering app:', e);
-    }
+    console.log('[TranCore] showPopupCard: rendering app');
+    popupRoot.render(<App />);
+    console.log('[TranCore] showPopupCard: rendering app successful');
 }
 
 export function hidePopupCard() {
+    console.log('[TranCore] Hiding popup card.');
     if (popupRoot) {
         popupRoot.unmount();
         popupRoot = null;

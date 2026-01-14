@@ -7,9 +7,13 @@ export async function getContainer(): Promise<HTMLElement> {
         return $container;
     }
 
+    console.log('[TranCore] getContainer: creating and appending container');
     $container = document.createElement('div');
     $container.id = containerID;
     attachEventsToContainer($container);
+    $container.style.position = 'fixed';
+    $container.style.top = '0';
+    $container.style.left = '0';
     $container.style.zIndex = zIndex;
 
     const shadowRoot = $container.attachShadow({ mode: 'open' });
