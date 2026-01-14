@@ -52,8 +52,10 @@ export function PronunciationList({ word }: { word: Word }) {
     }
 
     return (
-        <div className="__pronunciations-list">
-            <h2>Pronunciations</h2>
+        <div
+            className="__pronunciations-list"
+            style={{ maxHeight: '230px', overflowY: 'auto', padding: '15px' }}
+        >
             <div>
                 {pronunciations.map((item, index) => {
                     return <PronPlayer

@@ -1,53 +1,37 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { createUseStyles } from 'react-jss';
+import { useStyletron } from 'styletron-react';
 import PlayIcon from '../../../assets/img/play.svg';
 import PauseIcon from '../../../assets/img/pause.svg';
-
-const useStyles = createUseStyles({
-    player: {
-        display: 'flex',
-        alignItems: 'center',
-    },
-    button: {
-        background: 'none',
-        border: 'none',
-        cursor: 'pointer',
-        padding: 0,
-        marginRight: '10px',
-        display: 'flex',
-        alignItems: 'center',
-    },
-    icon: {
-        width: '24px',
-        height: '24px',
-    },
-});
 
 interface AudioPlayerProps {
     src: string;
 }
 
 export function AudioPlayer({ src }: AudioPlayerProps) {
-    const classes = useStyles();
+    const [css] = useStyletron();
     const [isPlaying, setIsPlaying] = useState(false);
     const audioRef = useRef<HTMLAudioElement | null>(null);
 
+    // Effect for cleanup on unmount
     useEffect(() => {
-        audioRef.current = new Audio(src);
-        const audio = audioRef.current;
-
-        const onEnded = () => setIsPlaying(false);
-        audio.addEventListener('ended', onEnded);
-
         return () => {
-            audio.removeEventListener('ended', onEnded);
-            audio.pause();
-            audioRef.current = null;
+            if (audioRef.current) {
+                audioRef.current.pause();
+                audioRef.current = null;
+            }
         };
-    }, [src]);
+    }, []);
 
     const togglePlayPause = () => {
-        if (audioRef.current) {
+        if (!audioRef.current) {
+            // First play: create and play audio
+            const audio = new Audio(src);
+            audioRef.current = audio;
+            audio.addEventListener('ended', () => setIsPlaying(false));
+            audio.play();
+            setIsPlaying(true);
+        } else {
+            // Subsequent plays: toggle
             if (isPlaying) {
                 audioRef.current.pause();
             } else {
@@ -58,9 +42,24 @@ export function AudioPlayer({ src }: AudioPlayerProps) {
     };
 
     return (
-        <div className={classes.player}>
-            <button onClick={togglePlayPause} className={classes.button}>
-                <img src={isPlaying ? PauseIcon : PlayIcon} alt={isPlaying ? 'Pause' : 'Play'} className={classes.icon} />
+        <div className={css({ display: 'flex', alignItems: 'center' })}>
+            <button
+                onClick={togglePlayPause}
+                className={css({
+                    background: 'none',
+                    border: 'none',
+                    cursor: 'pointer',
+                    padding: 0,
+                    marginRight: '10px',
+                    display: 'flex',
+                    alignItems: 'center',
+                })}
+            >
+                <img
+                    src={isPlaying ? PauseIcon : PlayIcon}
+                    alt={isPlaying ? 'Pause' : 'Play'}
+                    className={css({ width: '24px', height: '24px' })}
+                />
             </button>
         </div>
     );

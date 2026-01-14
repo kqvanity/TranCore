@@ -15,7 +15,6 @@ import { Header } from './components/Header';
 import { InputArea } from './components/InputArea';
 import { OutputArea } from './components/OutputArea';
 import { PronunciationList } from './components/Pronunciations';
-import { UIStateProvider, useUIState } from './UIStateContext';
 import { ViewProvider, useView } from './ViewContext';
 import { Dictionary } from './components/Dictionary';
 import { Footer } from './components/Footer';
@@ -65,18 +64,15 @@ export async function showPopupCard(
                     readConfiguration,
                     retrieveRecordings,
                 }}>
-                    <UIStateProvider>
                         <ViewProvider word={word}>
                             <MainApp word={word} reference={reference} engine={engine} />
                         </ViewProvider>
-                    </UIStateProvider>
                 </ApiContext.Provider>
             </GlobalSuspense>
         </React.StrictMode>
     );
 
     const MainApp = ({ word, reference, engine }: { word: Word, reference: ReferenceElement, engine: any }) => {
-        const { showPronunciations } = useUIState();
         const { view } = useView();
 
         return (
@@ -86,13 +82,13 @@ export async function showPopupCard(
                     {view === 'dictionary' ? (
                         <>
                             <Dictionary word={word} />
-                            {showPronunciations && <PronunciationList word={{ 'term': word.title }} />}
+                            <PronunciationList word={{ 'term': word.title }} />
                         </>
                     ) : (
                         <>
                             <InputArea text={word.title} />
                             <OutputArea word={word} />
-                            {showPronunciations && <PronunciationList word={{ 'term': word.title }} />}
+                            <PronunciationList word={{ 'term': word.title }} />
                         </>
                     )}
                     <Footer />

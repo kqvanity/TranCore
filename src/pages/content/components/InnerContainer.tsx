@@ -50,15 +50,12 @@ export default function InnerContainer({ children, reference }: Props) {
                     zIndex,
                     borderRadius: '8px',
                     boxShadow: '0 4px 12px rgba(0,0,0,.15)',
-                    minWidth: `${popupCardMinWidth}px`,
-                    maxWidth: `${popupCardMaxWidth}px`,
                     lineHeight: '1.6',
                     fontSize: '13px',
                     color: '#333',
                     font: '14px/1.6 -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica Neue,Arial,sans-serif,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol,Noto Color Emoji',
-                    maxHeight: `${popupCardMaxHeight}px`,
-                    minHeight: `${popupCardMinHeight}px`,
                     width: `${popupCardMinWidth}px`,
+                    height: `${popupCardMinHeight}px`,
                     overflow: 'hidden',
                     background: 'floralwhite',
                     display: 'flex',
@@ -79,7 +76,6 @@ export default function InnerContainer({ children, reference }: Props) {
                 />
                 <div
                     className={css({
-                        overflow: 'scroll',
                         flex: 1,
                         display: 'flex',
                         flexDirection: 'column',

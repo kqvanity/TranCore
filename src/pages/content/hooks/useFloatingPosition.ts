@@ -1,9 +1,8 @@
 
-import { computePosition, shift, flip, offset, type ReferenceElement, size } from '@floating-ui/dom';
+import { computePosition, shift, flip, offset, type ReferenceElement } from '@floating-ui/dom';
 import { useCallback, useEffect, RefObject } from 'react';
 import {
     documentPadding,
-    popupCardMinHeightAfterTranslation,
     popupCardOffset,
 } from '../consts';
 
@@ -23,14 +22,6 @@ export function useFloatingPosition(
                 shift({ padding: documentPadding }),
                 offset(popupCardOffset),
                 flip(),
-                size({
-                    apply({ availableHeight, elements }) {
-                        Object.assign(elements.floating.style, {
-                            maxHeight: `${Math.max(popupCardMinHeightAfterTranslation, availableHeight)}px`,
-                            overflow: 'hidden',
-                        });
-                    },
-                }),
             ],
             strategy: 'fixed',
         });

@@ -25,8 +25,7 @@ export function OutputArea({ word }: OutputAreaProps) {
         <div
             className={css({
                 padding: '15px',
-                flex: 1,
-                overflowY: 'auto',
+                height: '100px',
             })}
         >
             <div

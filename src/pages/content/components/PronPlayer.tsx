@@ -1,27 +1,25 @@
 import { Pronunciation } from "../../../core/domain/entities/model";
 import { AudioPlayer } from "./AudioPlayer";
-import { createUseStyles } from "react-jss";
-
-const useStyles = createUseStyles({
-    pronPlayer: {
-        display: 'flex',
-        alignItems: 'center',
-        marginBottom: '10px',
-    },
-    title: {
-        marginLeft: '10px',
-    },
-    translation: {
-        marginLeft: '5px',
-        color: '#666',
-    },
-});
+import { useStyletron } from "styletron-react";
 
 export const PronPlayer = (pron: Pronunciation) => {
-    const classes = useStyles();
-    return <div className={classes.pronPlayer}>
-        <AudioPlayer src={pron.url} />
-        <span className={classes.title}>{pron.title}</span>
-        {pron.translation && <span className={classes.translation}>{' / '}{pron.translation.title}</span>}
-    </div>
-}
+    const [css] = useStyletron();
+    return (
+        <div
+            className={css({
+                display: 'flex',
+                alignItems: 'center',
+                marginBottom: '10px',
+            })}
+        >
+            <AudioPlayer src={pron.url} />
+            <span className={css({ marginLeft: '10px' })}>{pron.title}</span>
+            {pron.translation && (
+                <span className={css({ marginLeft: '5px', color: '#666' })}>
+                    {' / '}
+                    {pron.translation.title}
+                </span>
+            )}
+        </div>
+    );
+};
