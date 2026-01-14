@@ -1,36 +1,13 @@
-
 import React from 'react';
-import { createUseStyles } from 'react-jss';
+import { useStyletron } from 'styletron-react';
 import { useUIState } from '../UIStateContext';
 import { useView } from '../ViewContext';
 import SpeakerIcon from '../../../assets/img/volume-2.svg';
 import CopyStackIcon from '../../../assets/img/copy-stack.svg';
 import MagicStickIcon from '../../../assets/img/magic-stick.svg';
 
-const useStyles = createUseStyles({
-    footer: {
-        display: 'flex',
-        justifyContent: 'flex-end',
-        padding: '10px 15px',
-        borderTop: '1px solid #e0e0e0',
-    },
-    iconButton: {
-        background: 'none',
-        border: 'none',
-        cursor: 'pointer',
-        padding: '5px',
-        display: 'flex',
-        alignItems: 'center',
-        '& img': {
-            width: '16px',
-            height: '16px',
-            filter: 'grayscale(100%) brightness(0.5)',
-        },
-    },
-});
-
 export function Footer() {
-    const classes = useStyles();
+    const [css] = useStyletron();
     const { showPronunciations, setShowPronunciations } = useUIState();
     const { view, setView } = useView();
 
@@ -42,16 +19,42 @@ export function Footer() {
         setView(view === 'dictionary' ? 'translator' : 'dictionary');
     };
 
+    const iconButton = css({
+        background: 'none',
+        border: 'none',
+        cursor: 'pointer',
+        padding: '5px',
+        display: 'flex',
+        alignItems: 'center',
+        ':hover': {
+            opacity: 0.7,
+        },
+    });
+
+    const iconImg = css({
+        width: '16px',
+        height: '16px',
+        filter: 'grayscale(100%) brightness(0.5)',
+    });
+
     return (
-        <div className={classes.footer}>
-            <button className={classes.iconButton} onClick={handleTogglePronunciations}>
-                <img src={SpeakerIcon} alt="Speaker" />
+        <div
+            className={css({
+                display: 'flex',
+                justifyContent: 'flex-end',
+                padding: '10px 15px',
+                borderTop: '1px solid #e0e0e0',
+                marginTop: 'auto', // Push footer to the bottom
+            })}
+        >
+            <button className={iconButton} onClick={handleTogglePronunciations}>
+                <img src={SpeakerIcon} alt="Speaker" className={iconImg} />
             </button>
-            <button className={classes.iconButton}>
-                <img src={CopyStackIcon} alt="Copy" />
+            <button className={iconButton}>
+                <img src={CopyStackIcon} alt="Copy" className={iconImg} />
             </button>
-            <button className={classes.iconButton} onClick={toggleView}>
-                <img src={MagicStickIcon} alt="Toggle view" />
+            <button className={iconButton} onClick={toggleView}>
+                <img src={MagicStickIcon} alt="Toggle view" className={iconImg} />
             </button>
         </div>
     );

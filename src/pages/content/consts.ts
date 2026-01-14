@@ -4,8 +4,8 @@ export const popupThumbID = '__yetone-openai-translator-popup-thumb'
 export const popupCardID = '__yetone-openai-translator-popup-card'
 // The whole container which entails the popupThumb & popupCard
 export const containerID = '__yetone-openai-translator'
-export const popupCardMinWidth = 150
-export const popupCardMinHeight = 150
+export const popupCardMinWidth = 380
+export const popupCardMinHeight = 300
 export const popupCardMinHeightAfterTranslation = 500
 export const popupCardMaxWidth = 660
 export const popupCardMaxHeight = 220
