@@ -4,6 +4,7 @@ import webExtension from "vite-plugin-web-extension";
 import pkg from "./package.json";
 
 export default defineConfig({
+  base: './',
   plugins: [
     react(),
     webExtension({
