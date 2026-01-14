@@ -22,8 +22,7 @@ interface ViewProviderProps {
 }
 
 export function ViewProvider({ children, word }: ViewProviderProps) {
-    const isSingleWord = !word.title.includes(' ');
-    const [view, setView] = useState<View>(isSingleWord ? 'dictionary' : 'translator');
+    const [view, setView] = useState<View>('translator');
     const [translation, setTranslation] = useState<string>('');
 
     return (
