@@ -1,6 +1,13 @@
 import MessageSender = chrome.runtime.MessageSender;
 import { Message } from "../content/fetch";
 
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+    if (request.action === 'open_settings') {
+        const settingsUrl = chrome.runtime.getURL('src/pages/settings/index.html');
+        chrome.tabs.create({ url: settingsUrl });
+    }
+});
+
 chrome.runtime.onMessage.addListener((request: Message, sender: MessageSender, sendResponse: (response: any) => void) => {
     (async() => {
     let responseData = ""

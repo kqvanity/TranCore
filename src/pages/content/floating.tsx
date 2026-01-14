@@ -11,6 +11,7 @@ import { ApiContext } from './ApiContext';
 import { fetchTranslation } from '../../core/adapter/gateways/fetch';
 import { readConfiguration } from '../../core/adapter/gateways/configurations';
 import { retrieveRecordings } from '../../core/adapter/gateways/pronunciation/forvo';
+import { sendMessage } from '../../core/adapter/gateways/chrome-api';
 import { Header } from './components/Header';
 import { InputArea } from './components/InputArea';
 import { OutputArea } from './components/OutputArea';
@@ -18,7 +19,6 @@ import { PronunciationList } from './components/Pronunciations';
 import { ViewProvider, useView } from './ViewContext';
 import { Dictionary } from './components/Dictionary';
 import { Footer } from './components/Footer';
-import { Settings } from './components/Settings';
 
 // Persistent root and element for the popup
 let popupRoot: Root | null = null;
@@ -64,6 +64,7 @@ export async function showPopupCard(
                     fetchTranslation,
                     readConfiguration,
                     retrieveRecordings,
+                    sendMessage,
                 }}>
                         <ViewProvider word={word}>
                             <MainApp word={word} reference={reference} engine={engine} />
@@ -80,9 +81,7 @@ export async function showPopupCard(
             <StyletronProvider value={engine}>
                 <InnerContainer reference={reference}>
                     <Header />
-                    {view === 'settings' ? (
-                        <Settings />
-                    ) : view === 'dictionary' ? (
+                    {view === 'dictionary' ? (
                         <>
                             <Dictionary word={word} />
                             <PronunciationList word={{ 'term': word.title }} />
@@ -94,7 +93,7 @@ export async function showPopupCard(
                             <PronunciationList word={{ 'term': word.title }} />
                         </>
                     )}
-                    {view !== 'settings' && <Footer />}
+                    <Footer />
                 </InnerContainer>
             </StyletronProvider>
         )

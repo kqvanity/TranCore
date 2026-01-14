@@ -1,7 +1,7 @@
 
 import React, { createContext, useContext, useState } from 'react';
 
-export type View = 'dictionary' | 'translator' | 'settings';
+export type View = 'dictionary' | 'translator';
 
 interface ViewState {
     view: View;

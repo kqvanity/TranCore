@@ -2,11 +2,11 @@ import React from 'react';
 import { useStyletron } from 'styletron-react';
 import SettingsIcon from '../../../assets/img/settings.svg';
 import CloseIcon from '../../../assets/img/x.svg';
-import { useView } from '../ViewContext';
+import { useApi } from '../ApiContext';
 
 export function Header() {
     const [css] = useStyletron();
-    const { setView } = useView();
+    const { sendMessage } = useApi();
 
     const iconButton = css({
         background: 'none',
@@ -45,7 +45,7 @@ export function Header() {
                     marginLeft: 'auto',
                 })}
             >
-                <button className={iconButton} onClick={() => setView('settings')}>
+                <button className={iconButton} onClick={() => sendMessage({ action: 'open_settings' })}>
                     <img src={SettingsIcon} alt="Settings" className={iconImg} />
                 </button>
                 <button className={iconButton}>

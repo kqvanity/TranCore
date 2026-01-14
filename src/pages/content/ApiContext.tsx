@@ -13,6 +13,7 @@ export interface Api {
     fetchTranslation: (word: string) => Promise<GoogleTranslateResponse>;
     readConfiguration: () => Promise<UserConfiguration>;
     retrieveRecordings: (word: string, langCode: string) => Promise<Pronunciation[]>;
+    sendMessage: (message: any) => Promise<any>;
 }
 
 export const ApiContext = createContext<Api | null>(null);
