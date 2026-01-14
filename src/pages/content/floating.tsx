@@ -18,6 +18,7 @@ import { PronunciationList } from './components/Pronunciations';
 import { ViewProvider, useView } from './ViewContext';
 import { Dictionary } from './components/Dictionary';
 import { Footer } from './components/Footer';
+import { Settings } from './components/Settings';
 
 // Persistent root and element for the popup
 let popupRoot: Root | null = null;
@@ -79,7 +80,9 @@ export async function showPopupCard(
             <StyletronProvider value={engine}>
                 <InnerContainer reference={reference}>
                     <Header />
-                    {view === 'dictionary' ? (
+                    {view === 'settings' ? (
+                        <Settings />
+                    ) : view === 'dictionary' ? (
                         <>
                             <Dictionary word={word} />
                             <PronunciationList word={{ 'term': word.title }} />
@@ -91,7 +94,7 @@ export async function showPopupCard(
                             <PronunciationList word={{ 'term': word.title }} />
                         </>
                     )}
-                    <Footer />
+                    {view !== 'settings' && <Footer />}
                 </InnerContainer>
             </StyletronProvider>
         )

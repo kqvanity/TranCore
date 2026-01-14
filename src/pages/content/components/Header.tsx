@@ -1,20 +1,12 @@
 import React from 'react';
 import { useStyletron } from 'styletron-react';
-import { Dropdown } from './Dropdown';
-import SwapIcon from '../../../assets/img/swap.svg';
 import SettingsIcon from '../../../assets/img/settings.svg';
 import CloseIcon from '../../../assets/img/x.svg';
+import { useView } from '../ViewContext';
 
 export function Header() {
     const [css] = useStyletron();
-    const languages = ['English', 'Chinese', 'Spanish', 'French'];
-    const [fromLanguage, setFromLanguage] = React.useState('English');
-    const [toLanguage, setToLanguage] = React.useState('Chinese');
-
-    const handleSwapLanguages = () => {
-        setFromLanguage(toLanguage);
-        setToLanguage(fromLanguage);
-    };
+    const { setView } = useView();
 
     const iconButton = css({
         background: 'none',
@@ -53,20 +45,7 @@ export function Header() {
                     marginLeft: 'auto',
                 })}
             >
-                <div
-                    className={css({
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '5px',
-                    })}
-                >
-                    <Dropdown options={languages} selected={fromLanguage} onSelect={setFromLanguage} />
-                    <button className={iconButton} onClick={handleSwapLanguages}>
-                        <img src={SwapIcon} alt="Swap languages" className={iconImg} />
-                    </button>
-                    <Dropdown options={languages} selected={toLanguage} onSelect={setToLanguage} />
-                </div>
-                <button className={iconButton}>
+                <button className={iconButton} onClick={() => setView('settings')}>
                     <img src={SettingsIcon} alt="Settings" className={iconImg} />
                 </button>
                 <button className={iconButton}>

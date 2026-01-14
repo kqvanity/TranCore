@@ -33,7 +33,7 @@
     	"https://translate.google.de/"
     ],
     "action": {
-        "default_popup": "index.html",
+        "default_popup": "src/pages/settings/index.html",
         "default_title": "TranCore"
     },
     "browser_specific_settings": {

@@ -22,9 +22,9 @@ export const readConfiguration = async (): Promise<UserConfiguration> => {
 
     const userConfig: UserConfiguration = {
         ...defaultConfiguration,
-        fromLanguage: storedConfig[ConfigKeys.FROM_LANGUAGE],
-        toLanguage: storedConfig[ConfigKeys.TO_LANGUAGE],
-        key: storedConfig[ConfigKeys.API_KEY],
+        fromLanguage: storedConfig[ConfigKeys.FROM_LANGUAGE] ?? defaultConfiguration.fromLanguage,
+        toLanguage: storedConfig[ConfigKeys.TO_LANGUAGE] ?? defaultConfiguration.toLanguage,
+        key: storedConfig[ConfigKeys.API_KEY] ?? defaultConfiguration.key,
     };
 
     return userConfig;

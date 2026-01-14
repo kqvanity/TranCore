@@ -1,6 +1,13 @@
 
-export const getStorage = (keys: string | string[] | { [key: string]: any } | null) => {
-    return chrome.storage.local.get(keys);
+export const getStorage = (keys: string | string[] | { [key: string]: any } | null): Promise<{ [key: string]: any }> => {
+    return new Promise((resolve, reject) => {
+        chrome.storage.local.get(keys, (items) => {
+            if (chrome.runtime.lastError) {
+                return reject(chrome.runtime.lastError);
+            }
+            resolve(items);
+        });
+    });
 }
 
 export const setStorage = (items: { [key: string]: any }): Promise<void> => {
