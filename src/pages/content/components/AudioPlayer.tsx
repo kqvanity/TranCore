@@ -12,6 +12,15 @@ export function AudioPlayer({ src }: AudioPlayerProps) {
     const [isPlaying, setIsPlaying] = useState(false);
     const audioRef = useRef<HTMLAudioElement | null>(null);
 
+    useEffect(() => {
+        // When src changes, we need to reset the audio player
+        if (audioRef.current) {
+            audioRef.current.pause();
+            audioRef.current = null;
+            setIsPlaying(false);
+        }
+    }, [src]);
+
     // Effect for cleanup on unmount
     useEffect(() => {
         return () => {
