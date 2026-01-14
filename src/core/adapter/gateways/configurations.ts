@@ -4,27 +4,23 @@ import { ConfigKeys } from '../../domain/entities/config-keys';
 export interface UserConfiguration {
     fromLanguage: string;
     toLanguage: string;
-    key: string;
 }
 
 const defaultConfiguration: UserConfiguration = {
     fromLanguage: 'en',
     toLanguage: 'de',
-    key: '',
 };
 
 export const readConfiguration = async (): Promise<UserConfiguration> => {
     const storedConfig = await getStorage([
         ConfigKeys.FROM_LANGUAGE,
         ConfigKeys.TO_LANGUAGE,
-        ConfigKeys.API_KEY,
     ]);
 
     const userConfig: UserConfiguration = {
         ...defaultConfiguration,
         fromLanguage: storedConfig[ConfigKeys.FROM_LANGUAGE] ?? defaultConfiguration.fromLanguage,
         toLanguage: storedConfig[ConfigKeys.TO_LANGUAGE] ?? defaultConfiguration.toLanguage,
-        key: storedConfig[ConfigKeys.API_KEY] ?? defaultConfiguration.key,
     };
 
     return userConfig;
@@ -38,9 +34,6 @@ export const saveConfiguration = async (config: Partial<UserConfiguration>): Pro
     }
     if (config.toLanguage !== undefined) {
         newConfig[ConfigKeys.TO_LANGUAGE] = config.toLanguage;
-    }
-    if (config.key !== undefined) {
-        newConfig[ConfigKeys.API_KEY] = config.key;
     }
 
     return await setStorage(newConfig);

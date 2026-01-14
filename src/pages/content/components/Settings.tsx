@@ -11,7 +11,6 @@ const languageMap: { [key: string]: string } = {
     'French': 'fr',
     'Chinese': 'zh',
 };
-const triggerKeys = ['None', 'Alt', 'Ctrl', 'Shift'];
 
 const getKeyByValue = (obj: { [key: string]: string }, value: string) => {
     return Object.keys(obj).find(key => obj[key] === value);
@@ -46,14 +45,6 @@ export function Settings() {
         }
     };
 
-    const handleTriggerKeyChange = async (key: string) => {
-        if (config) {
-            const newConfig = { ...config, key: key.toLowerCase() };
-            setConfig(newConfig);
-            await saveConfiguration({ key: key.toLowerCase() });
-        }
-    };
-
     if (!config) {
         return <div>Loading settings...</div>;
     }
@@ -75,14 +66,6 @@ export function Settings() {
                     options={languages}
                     selected={getKeyByValue(languageMap, config.toLanguage) || 'German'}
                     onSelect={handleToLanguageChange}
-                />
-            </div>
-            <div className={css({ marginBottom: '15px' })}>
-                <label className={css({ display: 'block', marginBottom: '5px' })}>Trigger Key</label>
-                <Dropdown
-                    options={triggerKeys}
-                    selected={config.key.charAt(0).toUpperCase() + config.key.slice(1) || 'None'}
-                    onSelect={handleTriggerKeyChange}
                 />
             </div>
         </div>
