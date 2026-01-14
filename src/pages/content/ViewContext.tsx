@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState } from 'react';
 
 export type View = 'dictionary' | 'translator';
@@ -8,6 +7,8 @@ interface ViewState {
     setView: (view: View) => void;
     translation: string;
     setTranslation: (translation: string) => void;
+    selectedWord: string;
+    setSelectedWord: (word: string) => void;
 }
 
 const ViewContext = createContext<ViewState | null>(null);
@@ -24,9 +25,10 @@ interface ViewProviderProps {
 export function ViewProvider({ children, word }: ViewProviderProps) {
     const [view, setView] = useState<View>('translator');
     const [translation, setTranslation] = useState<string>('');
+    const [selectedWord, setSelectedWord] = useState<string>(word.title);
 
     return (
-        <ViewContext.Provider value={{ view, setView, translation, setTranslation }}>
+        <ViewContext.Provider value={{ view, setView, translation, setTranslation, selectedWord, setSelectedWord }}>
             {children}
         </ViewContext.Provider>
     );

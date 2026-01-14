@@ -84,13 +84,13 @@ export async function showPopupCard(
                     {view === 'dictionary' ? (
                         <>
                             <Dictionary word={word} />
-                            <PronunciationList word={{ 'term': word.title }} />
+                            <PronunciationList />
                         </>
                     ) : (
                         <>
                             <InputArea text={word.title} />
-                            <OutputArea word={word} />
-                            <PronunciationList word={{ 'term': word.title }} />
+                            <OutputArea />
+                            <PronunciationList />
                         </>
                     )}
                     <Footer />

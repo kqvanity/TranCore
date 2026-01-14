@@ -3,26 +3,24 @@ import Fuse from 'fuse.js';
 import { Pronunciation } from "../../../core/domain/entities/model";
 import { PronPlayer } from "./PronPlayer";
 import { useApi } from "../ApiContext";
+import { useView } from "../ViewContext";
 
-interface Word {
-    term: string
-}
-
-export function PronunciationList({ word }: { word: Word }) {
+export function PronunciationList() {
     const [pronunciations, setPronunciations] = useState<Pronunciation[]>([]);
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [error, setError] = useState<Error | null>(null);
     const { readConfiguration, retrieveRecordings } = useApi();
+    const { selectedWord } = useView();
 
     const fetchData = async () => {
         try {
             const config = await readConfiguration();
-            const data = await retrieveRecordings(word.term, config.fromLanguage);
+            const data = await retrieveRecordings(selectedWord, config.fromLanguage);
             const fuse = new Fuse(data ?? [], {
                 keys: ["title"],
                 threshold: 1.0,
             });
-            const fusedData = fuse.search(word.term).map((result) => result.item);
+            const fusedData = fuse.search(selectedWord).map((result) => result.item);
             setPronunciations(fusedData);
             setIsLoading(false);
         } catch (err: any) {
@@ -33,7 +31,7 @@ export function PronunciationList({ word }: { word: Word }) {
 
     useEffect(() => {
         fetchData();
-    }, [word, readConfiguration, retrieveRecordings]);
+    }, [selectedWord, readConfiguration, retrieveRecordings]);
 
     if (error) {
         return (

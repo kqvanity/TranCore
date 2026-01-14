@@ -1,5 +1,6 @@
 import React from 'react';
 import { useStyletron } from 'styletron-react';
+import { useView } from '../ViewContext';
 
 interface InputAreaProps {
     text: string;
@@ -7,6 +8,10 @@ interface InputAreaProps {
 
 export function InputArea({ text }: InputAreaProps) {
     const [css] = useStyletron();
+    const { selectedWord, setSelectedWord } = useView();
+
+    const words = text.split(/(\s+)/);
+
     return (
         <div
             className={css({
@@ -14,22 +19,35 @@ export function InputArea({ text }: InputAreaProps) {
                 borderBottom: '1px solid #e0e0e0',
             })}
         >
-            <textarea
+            <div
                 className={css({
                     width: '100%',
-                    border: 'none',
-                    resize: 'none',
                     fontSize: '14px',
                     fontFamily: 'inherit',
-                    background: 'transparent',
-                    ':focus': {
-                        outline: 'none',
-                    },
+                    lineHeight: '1.6',
                 })}
-                value={text}
-                readOnly
-                rows={2}
-            />
+            >
+                {words.map((word, index) => {
+                    if (word.trim() === '') {
+                        return <span key={index}>{word}</span>;
+                    }
+                    return (
+                        <span
+                            key={index}
+                            className={css({
+                                cursor: 'pointer',
+                                backgroundColor: word === selectedWord ? 'rgba(255, 220, 100, 0.5)' : 'transparent',
+                                ':hover': {
+                                    backgroundColor: 'rgba(255, 220, 100, 0.3)',
+                                },
+                            })}
+                            onClick={() => setSelectedWord(word)}
+                        >
+                            {word}
+                        </span>
+                    );
+                })}
+            </div>
         </div>
     );
 }
