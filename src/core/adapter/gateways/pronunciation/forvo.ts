@@ -24,28 +24,17 @@ const _loadPronunciations: LoadPronunciationsFunction = async (url, loadJsonResp
     return []; // Or handle the error more gracefully
   }
 
-  // Map over the pronunciations and fetch the audio data for each one.
-  const pronunciations = await Promise.all(parsedResponse.data.map(async (p) => {
+  return parsedResponse.data.map(p => {
     const translation = p.translation ? new Translation(p.translation.title, p.translation.language_code) : undefined;
-
-    // Fetch audio data as a stringified array, convert it to a Uint8Array,
-    // create a Blob, and then create a local object URL.
-    const audioDataString = await fetchDataFn({ remoteSiteUrl: p.url, msg: "audio" });
-    const audioData = new Uint8Array(JSON.parse(audioDataString));
-    const audioBlob = new Blob([audioData], { type: 'audio/mpeg' }); // Assuming mp3 format
-    const blobUrl = URL.createObjectURL(audioBlob);
-
     const pronunciation = new Pronunciation(
-        p.title,
-        blobUrl, // Use the local blob URL
-        p.tags,
-        translation
+      p.title,
+      p.url,
+      p.tags, // Zod already cleaned this up
+      translation
     );
     pronunciation.title = pronunciation.title.toLowerCase();
     return pronunciation;
-  }));
-
-  return pronunciations;
+  });
 }
 
 // --- Public API ---
