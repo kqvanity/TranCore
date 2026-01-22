@@ -10,3 +10,5 @@ scratchpad
 yarn.lock
 
 *storybook.log
+
+dist/
