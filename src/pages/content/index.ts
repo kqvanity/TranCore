@@ -5,6 +5,7 @@ import { containerID, popupCardOffset } from './consts'
 import { showPopupCard, hidePopupCard } from "./floating";
 import { retrieveRecordings } from "../../core/adapter/gateways/pronunciation/forvo";
 import { getContainer } from "./container";
+import { showSideIcon } from './side-icon';
 
 export const loadPronunciations = async (word: string): Promise<Pronunciation[]> => {
     let userConfiguration = await readConfiguration()
@@ -27,8 +28,9 @@ const mouseDownHandler = async (event: MouseEvent) => {
         return;
     }
 
+    const $sideIcon = document.getElementById('trancore-side-icon');
     const path = event.composedPath();
-    if (path.includes($container)) {
+    if (path.includes($container) || ($sideIcon && path.includes($sideIcon))) {
         return;
     }
 
@@ -72,4 +74,8 @@ const mouseUpHandler = async (event: MouseEvent) => {
     });
 }
 
+import { showSideIcon } from "./side-icon";
+
 document.addEventListener('mouseup', mouseUpHandler)
+
+showSideIcon();

@@ -27,7 +27,8 @@
         "tabs",
         "activeTab",
         "scripting",
-        "storage"
+        "storage",
+        "clipboardRead"
     ],
     "host_permissions": [
         "http://localhost:9999/pronunciations/*",
