@@ -14,7 +14,11 @@ export function formatGoogleTranslateResponse(response: GoogleTranslateResponse)
         returnVal += `(Sentence)\n`
         // TODO: Employ a more appropriate approach later on!
         try {
-            returnVal += `${response.sentences[0].trans}`
+            response.sentences.forEach(sentence => {
+                if (sentence.trans) {
+                    returnVal += sentence.trans;
+                }
+            });
         } catch (e) { }
     }
     return (returnVal)
