@@ -14,7 +14,6 @@ import { InputArea } from './InputArea';
 import { OutputArea } from './OutputArea';
 import { PronunciationList } from './Pronunciations';
 import { Dictionary } from './Dictionary';
-import { Footer } from './Footer';
 // import { faker } from '@faker-js/faker'; // Remove faker import
 
 const mockApi: Api = {
@@ -117,7 +116,6 @@ const App = ({ word }: { word: Word }) => {
                     {showPronunciations && <PronunciationList word={{ 'term': word.title }} />}
                 </>
             )}
-            <Footer />
         </>
     );
 };

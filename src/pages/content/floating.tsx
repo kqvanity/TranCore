@@ -18,7 +18,6 @@ import { OutputArea } from './components/OutputArea';
 import { PronunciationList } from './components/Pronunciations';
 import { ViewProvider, useView } from './ViewContext';
 import { Dictionary } from './components/Dictionary';
-import { Footer } from './components/Footer';
 
 // Persistent root and element for the popup
 let popupRoot: Root | null = null;
@@ -93,7 +92,6 @@ export async function showPopupCard(
                             <PronunciationList />
                         </>
                     )}
-                    <Footer />
                 </InnerContainer>
             </StyletronProvider>
         )
