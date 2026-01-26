@@ -13,13 +13,35 @@ export const PronPlayer = (pron: Pronunciation) => {
             })}
         >
             <AudioPlayer src={pron.url} />
-            <span className={css({ marginLeft: '10px' })}>{pron.title}</span>
-            {pron.translation && (
-                <span className={css({ marginLeft: '5px', color: '#666' })}>
-                    {' / '}
-                    {pron.translation.title}
+            <div
+                className={css({
+                    display: 'flex',
+                    flexDirection: 'column',
+                    marginLeft: '10px',
+                    flex: '1',
+                    minWidth: '0',
+                })}
+            >
+                <span
+                    className={css({
+                        whiteSpace: 'nowrap',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                    })}
+                >
+                    {pron.title}
                 </span>
-            )}
+                {pron.translation && (
+                    <span
+                        className={css({
+                            fontSize: '12px',
+                            color: '#888',
+                        })}
+                    >
+                        {pron.translation.title}
+                    </span>
+                )}
+            </div>
         </div>
     );
 };
