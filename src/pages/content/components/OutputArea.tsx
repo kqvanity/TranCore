@@ -41,7 +41,6 @@ export function OutputArea() {
                 className={css({
                     fontSize: '14px',
                     lineHeight: '1.6',
-                    whiteSpace: 'pre-wrap',
                 })}
             >
                 {translation}
