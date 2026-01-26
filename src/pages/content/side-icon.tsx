@@ -8,6 +8,8 @@ import { Word } from '../../core/domain/entities/model';
 let sideIconRoot: Root | null = null;
 let $sideIconElement: HTMLDivElement | null = null;
 
+export const getSideIcon = () => $sideIconElement;
+
 async function getOrCreateSideIconElement(): Promise<HTMLDivElement> {
     if (!$sideIconElement) {
         $sideIconElement = document.createElement('div');

@@ -112,10 +112,6 @@ export function hidePopupCard() {
         $popupCardElement.remove();
         $popupCardElement = null;
     }
-    const $container = document.getElementById(containerID);
-    if ($container) {
-        $container.remove();
-    }
 }
 
 
