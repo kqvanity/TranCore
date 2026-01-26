@@ -11,6 +11,7 @@ import {
     zIndex,
 } from '../consts';
 import { useDraggable } from '../hooks/useDraggable';
+import { RemoveScroll } from 'react-remove-scroll';
 import { useFloatingPosition } from '../hooks/useFloatingPosition';
 import { ReferenceElement } from '@floating-ui/dom';
 
@@ -54,7 +55,8 @@ export default function InnerContainer({ children, reference }: Props) {
                     fontSize: '13px',
                     color: '#333',
                     font: '14px/1.6 -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica Neue,Arial,sans-serif,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol,Noto Color Emoji',
-                    width: `${popupCardMinWidth}px`,
+                    minWidth: `${popupCardMinWidth}px`,
+                    maxWidth: `${popupCardMaxWidth}px`,
                     overflow: 'hidden',
                     background: 'floralwhite',
                     display: 'flex',
@@ -77,9 +79,13 @@ export default function InnerContainer({ children, reference }: Props) {
                     className={css({
                         display: 'flex',
                         flexDirection: 'column',
+                        maxHeight: `${popupCardMaxHeight}px`,
+                        overflowY: 'auto',
                     })}
                 >
-                    {children}
+                    <RemoveScroll>
+                        {children}
+                    </RemoveScroll>
                 </div>
             </div>
         </Draggable>
