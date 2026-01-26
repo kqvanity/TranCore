@@ -1,7 +1,7 @@
 export class Word {
     title: string
     constructor(title: string) {
-        this.title = title
+        this.title = title.replace(/\p{Extended_Pictographic}/gu, '').trim();
     }
 }
 
