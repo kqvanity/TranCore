@@ -23,6 +23,7 @@ export default function InnerContainer({ children, reference }: Props) {
     const [css] = useStyletron();
     const draggableRef = useRef<HTMLDivElement | null>(null);
     const [position, setPosition] = useState<{ x: number, y: number } | null>(null);
+    const [isMouseOver, setIsMouseOver] = useState(false);
 
     const { draggedRef, handleOnDrag } = useDraggable(setPosition);
     useFloatingPosition(reference, draggableRef, draggedRef, setPosition);
@@ -43,6 +44,8 @@ export default function InnerContainer({ children, reference }: Props) {
             <div
                 ref={draggableRef}
                 id={popupCardInnerContainerId}
+                onMouseEnter={() => setIsMouseOver(true)}
+                onMouseLeave={() => setIsMouseOver(false)}
                 className={css({
                     animationName: fadeIn,
                     animationDuration: '0.2s',
@@ -83,7 +86,7 @@ export default function InnerContainer({ children, reference }: Props) {
                         overflowY: 'auto',
                     })}
                 >
-                    <RemoveScroll>
+                    <RemoveScroll enabled={isMouseOver}>
                         {children}
                     </RemoveScroll>
                 </div>

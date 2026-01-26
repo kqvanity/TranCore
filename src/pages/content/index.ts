@@ -38,6 +38,11 @@ const mouseDownHandler = async (event: MouseEvent) => {
 }
 document.addEventListener('mousedown', mouseDownHandler)
 
+const scrollHandler = () => {
+    hidePopupCard();
+};
+document.addEventListener('scroll', scrollHandler, true);
+
 export const getClientX = (event: MouseEvent) => {
     return event.clientX
 }
