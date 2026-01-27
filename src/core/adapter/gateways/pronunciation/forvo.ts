@@ -47,7 +47,7 @@ export async function retrieveRecordings(
     loadJsonResponseFn: LoadJsonResponseFunction = _loadJsonResponse,
     fetchDataFn: FetchDataFunction = originalFetchData,
 ){
-    const endPoint = `http://localhost:9999/pronunciations/${word}?code=${langCode}`
+    const endPoint = `http://localhost:9999/pronunciations/${encodeURIComponent(word)}?code=${langCode}`
     const recordings: Pronunciation[] = await loadPronunciationsFn(endPoint, loadJsonResponseFn, fetchDataFn)
     return (recordings.sort((a, b) => a.title.length - b.title.length))
 }
