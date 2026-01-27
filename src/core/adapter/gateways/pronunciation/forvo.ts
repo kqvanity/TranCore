@@ -1,6 +1,7 @@
 import { fetchData as originalFetchData } from "../fetch";
 import { Pronunciation, Translation } from "../../../domain/entities/model";
 import { PronunciationResponseSchema } from "../../../domain/entities/schemas";
+import { BASE_URL } from "../../../constants";
 
 // --- Internal Helper Functions (for testability) ---
 // These are not exported, but retrieveRecordings can be made to accept them
@@ -47,7 +48,7 @@ export async function retrieveRecordings(
     loadJsonResponseFn: LoadJsonResponseFunction = _loadJsonResponse,
     fetchDataFn: FetchDataFunction = originalFetchData,
 ){
-    const endPoint = `http://localhost:9999/pronunciations/${encodeURIComponent(word)}?code=${langCode}`
+    const endPoint = `${BASE_URL}/pronunciations/${encodeURIComponent(word)}?code=${langCode}`
     const recordings: Pronunciation[] = await loadPronunciationsFn(endPoint, loadJsonResponseFn, fetchDataFn)
     return (recordings.sort((a, b) => a.title.length - b.title.length))
 }

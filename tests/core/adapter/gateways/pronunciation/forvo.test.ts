@@ -2,6 +2,7 @@
 import { retrieveRecordings } from "../../../../../src/core/adapter/gateways/pronunciation/forvo";
 import { vi } from "vitest";
 import { Pronunciation } from "../../../../../src/core/domain/entities/model";
+import { BASE_URL } from "../../../../../src/core/constants";
 
 describe("forvo", () => {
     it("should retrieve recordings and sort them", async () => {
@@ -46,17 +47,17 @@ describe("forvo", () => {
         );
 
         expect(mockFetchDataFn).toHaveBeenCalledWith({
-            remoteSiteUrl: "http://localhost:9999/pronunciations/word?code=en",
+            remoteSiteUrl: `${BASE_URL}/pronunciations/word?code=en`,
             msg: "json",
         });
 
         expect(mockLoadJsonResponseFn).toHaveBeenCalledWith(
-            "http://localhost:9999/pronunciations/word?code=en",
+            `${BASE_URL}/pronunciations/word?code=en`,
             mockFetchDataFn
         );
 
         expect(mockLoadPronunciationsFn).toHaveBeenCalledWith(
-            "http://localhost:9999/pronunciations/word?code=en",
+            `${BASE_URL}/pronunciations/word?code=en`,
             mockLoadJsonResponseFn,
             mockFetchDataFn
         );

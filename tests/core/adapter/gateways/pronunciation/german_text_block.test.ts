@@ -1,7 +1,7 @@
 
 import { retrieveRecordings } from "../../../../../src/core/adapter/gateways/pronunciation/forvo";
 import { vi } from "vitest";
-import { Pronunciation } from "../../../../../src/core/domain/entities/model";
+import { BASE_URL } from "../../../../../src/core/constants";
 
 describe("german text block", () => {
     it("should handle a block of German text", async () => {
@@ -17,7 +17,7 @@ describe("german text block", () => {
             mockFetchDataFn
         );
         expect(mockFetchDataFn).toHaveBeenCalledWith({
-            remoteSiteUrl: `http://localhost:9999/pronunciations/${encodeURIComponent(germanTextBlock)}?code=de`,
+            remoteSiteUrl: `${BASE_URL}/pronunciations/${encodeURIComponent(germanTextBlock)}?code=de`,
             msg: "json",
         });
     });

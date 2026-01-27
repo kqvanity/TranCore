@@ -1,7 +1,7 @@
 
 import { retrieveRecordings } from "../../../../../src/core/adapter/gateways/pronunciation/forvo";
 import { vi } from "vitest";
-import { Pronunciation } from "../../../../../src/core/domain/entities/model";
+import { BASE_URL } from "../../../../../src/core/constants";
 
 describe("german words", () => {
     it("should retrieve recordings for a list of German words", async () => {
@@ -33,7 +33,7 @@ describe("german words", () => {
                 mockFetchDataFn
             );
             expect(mockFetchDataFn).toHaveBeenCalledWith({
-                remoteSiteUrl: `http://localhost:9999/pronunciations/${encodeURIComponent(word)}?code=de`,
+                remoteSiteUrl: `${BASE_URL}/pronunciations/${encodeURIComponent(word)}?code=de`,
                 msg: "json",
             });
         }

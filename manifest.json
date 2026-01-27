@@ -31,7 +31,7 @@
         "clipboardRead"
     ],
     "host_permissions": [
-        "http://localhost:9999/pronunciations/*",
+        "http://localhost:9999/*",
     	"https://translate.google.de/"
     ],
     "action": {
