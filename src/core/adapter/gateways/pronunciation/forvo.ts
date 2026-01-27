@@ -2,6 +2,7 @@ import { fetchData as originalFetchData } from "../fetch";
 import { Pronunciation, Translation } from "../../../domain/entities/model";
 import { PronunciationResponseSchema } from "../../../domain/entities/schemas";
 import { BASE_URL } from "../../../constants";
+import { JsonParseError } from "../../../domain/entities/errors";
 
 // --- Internal Helper Functions (for testability) ---
 // These are not exported, but retrieveRecordings can be made to accept them
@@ -12,9 +13,16 @@ type LoadJsonResponseFunction = (url: string, fetchDataFn: FetchDataFunction) =>
 type LoadPronunciationsFunction = (url: string, loadJsonResponseFn: LoadJsonResponseFunction, fetchDataFn: FetchDataFunction) => Promise<Pronunciation[]>;
 
 const _loadJsonResponse: LoadJsonResponseFunction = async (url, fetchDataFn) => {
-  const jsonResponse = await fetchDataFn({ remoteSiteUrl: url, msg: "json" });
-  return JSON.parse(String(jsonResponse));
-};
+    const jsonResponse = await fetchDataFn({ remoteSiteUrl: url, msg: "json" });
+    try {
+        return JSON.parse(String(jsonResponse));
+    } catch (e) {
+        throw new JsonParseError(
+            `Failed to parse JSON response from server`,
+            String(jsonResponse)
+        );
+    }
+  };
 
 const _loadPronunciations: LoadPronunciationsFunction = async (url, loadJsonResponseFn, fetchDataFn) => {
   const response = await loadJsonResponseFn(url, fetchDataFn);
