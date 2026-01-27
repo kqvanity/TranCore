@@ -4,24 +4,27 @@ export function getGoogleTranslateUrl(word: string) {
 }
 
 export function formatGoogleTranslateResponse(response: GoogleTranslateResponse) {
-    let returnVal = ''
+    const formattedOutput: { pos?: string; terms?: string; sentence?: string }[] = [];
+
     try {
-        response.dict.forEach (element => {
-            returnVal += `(${element.pos})\n`
-            returnVal += `${element.terms.toString()}\n`
-        })
+        response.dict.forEach(element => {
+            formattedOutput.push({ pos: element.pos, terms: element.terms.join(', ') });
+        });
     } catch {
-        returnVal += `(Sentence)\n`
-        // TODO: Employ a more appropriate approach later on!
+        // Fallback for when dict is not available (e.g., for sentences)
+        let sentenceText = '';
         try {
             response.sentences.forEach(sentence => {
                 if (sentence.trans) {
-                    returnVal += sentence.trans;
+                    sentenceText += sentence.trans;
                 }
             });
-        } catch (e) { }
+            if (sentenceText) {
+                formattedOutput.push({ sentence: sentenceText });
+            }
+        } catch (e) { /* ignore */ }
     }
-    return (returnVal)
+    return formattedOutput;
 }
 
 interface Sentence {
