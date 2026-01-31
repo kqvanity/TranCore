@@ -17,6 +17,20 @@ export async function getContainer(): Promise<HTMLElement> {
     $container.style.zIndex = zIndex;
 
     const shadowRoot = $container.attachShadow({ mode: 'open' });
+
+    const style = document.createElement('style');
+    style.textContent = `
+        ::-webkit-scrollbar {
+            display: none;
+            width: 0;
+            height: 0;
+        }
+        * {
+            scrollbar-width: none;
+        }
+    `;
+    shadowRoot.appendChild(style);
+
     const $inner = document.createElement('div');
     shadowRoot.appendChild($inner);
 
