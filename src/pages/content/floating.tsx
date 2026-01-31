@@ -12,7 +12,6 @@ import { fetchTranslation } from '../../core/adapter/gateways/fetch';
 import { readConfiguration } from '../../core/adapter/gateways/configurations';
 import { retrieveRecordings } from '../../core/adapter/gateways/pronunciation/forvo';
 import { sendMessage } from '../../core/adapter/gateways/chrome-api';
-import { Header } from './components/Header';
 import { InputArea } from './components/InputArea';
 import { OutputArea } from './components/OutputArea';
 import { PronunciationList } from './components/Pronunciations';
@@ -79,7 +78,6 @@ export async function showPopupCard(
         return (
             <StyletronProvider value={engine}>
                 <InnerContainer reference={reference}>
-                    <Header />
                     {view === 'dictionary' ? (
                         <>
                             <Dictionary word={word} />
