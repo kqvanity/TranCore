@@ -36,7 +36,6 @@ export default function InnerContainer({ children, reference }: Props) {
     return (
         <Draggable
             nodeRef={draggableRef}
-            handle={dragRegionSelector}
             bounds="html"
             position={position ?? undefined}
             onDrag={handleOnDrag}
@@ -66,18 +65,7 @@ export default function InnerContainer({ children, reference }: Props) {
                     flexDirection: 'column',
                 })}
             >
-                <div
-                    data-tauri-drag-region
-                    className={css({
-                        height: '10px',
-                        width: '100%',
-                        cursor: 'move',
-                        backgroundColor: '#f0f0f0',
-                        borderTopLeftRadius: '8px',
-                        borderTopRightRadius: '8px',
-                        borderBottom: '1px solid #e0e0e0',
-                    })}
-                />
+
                 <div
                     className={css({
                         display: 'flex',
