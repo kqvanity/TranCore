@@ -52,7 +52,7 @@ export function PronunciationList() {
     return (
         <div
             className="__pronunciations-list"
-            style={{ maxHeight: '150px', overflowY: 'auto', padding: '15px' }}
+            style={{ height: '150px', overflowY: 'auto', padding: '15px' }}
         >
             <div>
                 {pronunciations.map((item, index) => {
