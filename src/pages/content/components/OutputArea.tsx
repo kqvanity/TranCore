@@ -39,7 +39,8 @@ export function OutputArea() {
         <div
             className={css({
                 padding: '15px',
-                height: '100px',
+                maxHeight: '3.2em', // 2 lines * 1.6em line-height
+                overflowY: 'auto',
             })}
         >
             {/* The "Polished 👍" div is a static example, remove it if not needed */}

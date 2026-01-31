@@ -25,6 +25,8 @@ export function InputArea({ text }: InputAreaProps) {
                     fontSize: '14px',
                     fontFamily: 'inherit',
                     lineHeight: '1.6',
+                    maxHeight: '3.2em', // 2 lines * 1.6em line-height
+                    overflowY: 'auto',
                 })}
             >
                 {words.map((word, index) => {
