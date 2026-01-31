@@ -59,18 +59,7 @@ export const appendStyleElement = (): void => {
 		div.recording-list-item {
 			display: flex;
 		}
-        /* For Webkit browsers (Chrome, Safari) */
-        ::-webkit-scrollbar {
-            display: none;
-            width: 0;
-            height: 0;
-        }
-
-        /* For Firefox */
-        * {
-            scrollbar-width: none;
-        }
-
+		div.tooltip::-webkit-scrollbar { display: none }
 		button.recording-button {
 			background-color: gray;
 			color: black;
