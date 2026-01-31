@@ -14,6 +14,10 @@ async function getOrCreateSideIconElement(): Promise<HTMLDivElement> {
     if (!$sideIconElement) {
         $sideIconElement = document.createElement('div');
         $sideIconElement.id = 'trancore-side-icon';
+        $sideIconElement.style.position = 'fixed';
+        $sideIconElement.style.top = '50%';
+        $sideIconElement.style.right = '10px';
+        $sideIconElement.style.transform = 'translateY(-50%)';
         const $container = await getContainer();
         $container.shadowRoot?.querySelector('div')?.appendChild($sideIconElement);
     }
