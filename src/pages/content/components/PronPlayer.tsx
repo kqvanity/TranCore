@@ -7,6 +7,10 @@ export const PronPlayer = (pron: Pronunciation) => {
     return (
         <div
             className={css({
+                // Overrides for unexpected parent styling
+                backgroundColor: 'transparent',
+                textAlign: 'left',
+                // Original styles
                 display: 'flex',
                 alignItems: 'center',
                 marginBottom: '10px',
