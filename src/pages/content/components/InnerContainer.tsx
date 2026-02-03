@@ -39,6 +39,7 @@ export default function InnerContainer({ children, reference }: Props) {
             bounds="html"
             position={position ?? undefined}
             onDrag={handleOnDrag}
+            cancel=".no-drag"
         >
             <div
                 ref={draggableRef}
@@ -63,16 +64,18 @@ export default function InnerContainer({ children, reference }: Props) {
                     background: 'floralwhite',
                     display: 'flex',
                     flexDirection: 'column',
+                    paddingTop: '10px', // Add some padding to create a draggable area
                 })}
             >
 
                 <div
-                    className={css({
+                    className={`${css({
                         display: 'flex',
                         flexDirection: 'column',
                         maxHeight: `${popupCardMaxHeight}px`,
                         overflowY: 'auto',
-                    })}
+                    })} no-drag`}
+                    onMouseDown={(e) => e.preventDefault()}
                 >
                     <RemoveScroll enabled={isMouseOver}>
                         {children}
