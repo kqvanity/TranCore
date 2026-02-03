@@ -11,6 +11,8 @@ export function InputArea({ text }: InputAreaProps) {
     const { selectedWord, setSelectedWord } = useView();
 
     const words = text.split(/(\s+)/);
+    const isMultiWord = text.trim().includes(' ');
+    const maxHeight = isMultiWord ? '6.4em' : '3.2em';
 
     return (
         <div
@@ -25,7 +27,7 @@ export function InputArea({ text }: InputAreaProps) {
                     fontSize: '14px',
                     fontFamily: 'inherit',
                     lineHeight: '1.6',
-                    maxHeight: '3.2em', // 2 lines * 1.6em line-height
+                    maxHeight: maxHeight,
                     overflowY: 'auto',
                 })}
             >
@@ -40,7 +42,7 @@ export function InputArea({ text }: InputAreaProps) {
                                 cursor: 'pointer',
                                 backgroundColor: word === selectedWord ? 'rgba(255, 220, 100, 0.5)' : 'transparent',
                                 ':hover': {
-                                    backgroundColor: 'rgba(255, 220, 100, 0.3)',
+                                    backgroundColor: 'rgba(255, 220, 100,.3)',
                                 },
                             })}
                             onClick={() => {

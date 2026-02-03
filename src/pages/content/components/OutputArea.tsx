@@ -35,11 +35,14 @@ export function OutputArea() {
         lineHeight: '1.6',
     });
 
+    const isMultiWord = selectedWord.trim().includes(' ');
+    const maxHeight = isMultiWord ? '6.4em' : '3.2em';
+
     return (
         <div
             className={css({
                 padding: '15px',
-                maxHeight: '3.2em', // 2 lines * 1.6em line-height
+                maxHeight: maxHeight,
                 overflowY: 'auto',
             })}
         >
