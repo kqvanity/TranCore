@@ -101,7 +101,7 @@ export function AudioPlayer({ src }: AudioPlayerProps) {
     );
 
     return (
-        <div className={css({ display: 'flex', alignItems: 'center' })}>
+        <div className={css({ display: 'flex', alignItems: 'center', flex: 'none' })}>
             <button
                 onClick={togglePlayPause}
                 disabled={isLoading}
