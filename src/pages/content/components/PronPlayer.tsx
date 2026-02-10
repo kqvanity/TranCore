@@ -24,6 +24,7 @@ export const PronPlayer = (pron: Pronunciation) => {
                     marginLeft: '10px',
                     flex: '1',
                     minWidth: '0',
+                    alignItems: 'flex-start',
                 })}
             >
                 <span
