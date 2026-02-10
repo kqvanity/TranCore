@@ -91,8 +91,6 @@ export function Settings() {
             justifyContent: 'center',
             minHeight: '100vh',
             background: '#f0f2f5',
-            fontFamily: "'Roboto', sans-serif",
-            padding: '20px',
         })}>
             <div className={css({
                 background: 'white',
